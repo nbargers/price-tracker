@@ -6,18 +6,27 @@ const productController = {};
 //Get Products Controller- GET Request:
 productController.getProducts = (req, res, next) => {
   // This gets the user's products with the most recent timestamp:
-  const userProducts = `SELECT DISTINCT ON (lowest_daily_price.product_id) *
-  FROM users_to_products
-    JOIN products ON users_to_products.product_id=products._id
-    JOIN lowest_daily_price ON lowest_daily_price.product_id=products._id
-  WHERE users_to_products.user_id=$1
-  ORDER BY lowest_daily_price.product_id, lowest_daily_price.timestamp DESC;
+
+  //OLD QUERY
+  // const userProducts = `SELECT DISTINCT ON (lowest_daily_price.product_id) *
+  // FROM users_to_products
+  //   JOIN products ON users_to_products.product_id=products._id
+  //   JOIN lowest_daily_price ON lowest_daily_price.product_id=products._id
+  // WHERE users_to_products.user_id=$1
+  // ORDER BY lowest_daily_price.product_id, lowest_daily_price.timestamp DESC;
+  // `;
+
+  //NEW QUERY
+  const userProducts = `SELECT * FROM products 
+  JOIN lowest_daily_price ON (products._id=lowest_daily_price.product_id) 
+  WHERE user_id=$1
+  ORDER BY lowest_daily_price.product_id, lowest_daily_price.timestamp DESC
   `;
 
-  let values = [req.params.user];
+  let user = [req.params.user];
 
   priceTrackerDB
-    .query(userProducts, values)
+    .query(userProducts, user)
     .then((data) => {
       res.locals.products = data.rows;
       return next();
@@ -52,28 +61,28 @@ productController.addProduct = async (req, res, next) => {
 
 
   //Query to check if the product is already in the products table.
-  let productInTableQuery = `SELECT * FROM products WHERE products.google_url=$1`;
-  const productInTable = await priceTrackerDB.query(productInTableQuery, [
-    google_url,
-  ]);
-  let productId = "";
+  // let productInTableQuery = `SELECT * FROM products WHERE products.google_url=$1`;
+  // const productInTable = await priceTrackerDB.query(productInTableQuery, [
+  //   google_url,
+  // ]);
+  // let productId = "";
 
-  if (productInTable.rows.length > 0) {
-    //If already exist: add product_id to object
-    productId = productInTable.rows[0]._id;
-  } else {
+  // if (productInTable.rows.length > 0) {
+  //   //If already exist: add product_id to object
+  //   productId = productInTable.rows[0]._id;
+  // } else {
     //If does not already exsit:
     //Add to products table and return product_id. Then add product_id to object
     const newProductId = await priceTrackerDB.query(
-      `INSERT INTO products (product_name, image_url, google_url) VALUES ($1,$2,$3) returning products._id`,
-      [productInfo.product_name, productInfo.image_url, productInfo.google_url]
+      `INSERT INTO products (product_name, image_url, google_url, user_id) VALUES ($1,$2,$3,$4) returning products._id`,
+      [productInfo.product_name, productInfo.image_url, productInfo.google_url, user]
     );
     productId = newProductId.rows[0]._id;
-  }
+  // }
 
   //Add to user_to_products table using product_id:
-  const usersToProductsQuery = `INSERT into users_to_products (user_id,product_id) VALUES ($1,$2)`;
-  const usersToProductsValues = [user, productId];
+  // const usersToProductsQuery = `INSERT into users_to_products (user_id,product_id) VALUES ($1,$2)`;
+  // const usersToProductsValues = [user, productId];
 
   //Add to lowest_daily_price table using product_id:
   const lowestDailyPriceQuery = `INSERT into lowest_daily_price (product_id, store_name, lowest_daily_price,	store_url) VALUES ($1,$2,$3,$4)`;
@@ -85,10 +94,10 @@ productController.addProduct = async (req, res, next) => {
     productInfo.store_url,
   ];
   try {
-    const userToProductsInsert = await priceTrackerDB.query(
-      usersToProductsQuery,
-      usersToProductsValues
-    );
+    // const userToProductsInsert = await priceTrackerDB.query(
+    //   usersToProductsQuery,
+    //   usersToProductsValues
+    // );
     const lowestDailyPriceInsert = await priceTrackerDB.query(
       lowestDailyPriceQuery,
       lowestDailyPriceValues
@@ -107,12 +116,10 @@ productController.addProduct = async (req, res, next) => {
 productController.deleteProduct = (req, res, next) => {
   const { user, id } = req.params;
 
-  const deleteProductFromUser = `DELETE FROM users_to_products WHERE user_id=$1 AND product_id=$2`;
-
-  let values = [user, id];
+  const deleteProduct = `DELETE FROM products WHERE _id=$1`;
 
   priceTrackerDB
-    .query(deleteProductFromUser, values)
+    .query(deleteProduct, id)
     .then((data) => {
 
       return next();
