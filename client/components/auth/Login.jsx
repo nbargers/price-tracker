@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import useInput from '../hooks/useInput';
 import Register from './Register';
 import LoginNavBar from '../nav/LoginNavBar';
+import { useAuth } from '../routes/useAuth';
 import {
 	Button,
 	Box,
@@ -20,7 +22,15 @@ import { Visibility, VisibilityOff } from '@material-ui/icons';
 import useStyles from '../../style/theme';
 import inputCheck from '../../utils/inputCheck';
 
-const Login = ({ registerUser, loginUser, ...rest }) => {
+const Login = ({  ...rest }) => {
+	let history = useHistory();
+
+	let auth = useAuth();
+
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [userId, setId] = useState('');
+
 	const [emailInput, updateEmail, resetEmail] = useInput('');
 	const [pwInput, updatePw, resetPw] = useInput('');
 	const [open, setOpen] = useState(false);
@@ -37,10 +47,35 @@ const Login = ({ registerUser, loginUser, ...rest }) => {
 		const err = inputCheck(emailInput, pwInput);
 		if (err) return alert(err);
 
-		loginUser(emailInput, pwInput);
+		// loginUser(emailInput, pwInput);
+		console.log('email :', emailInput);
+		console.log('password :', pwInput);
+		
+		// setEmail(emailInput);
+		// setPassword(pwInput);
 
-		resetEmail();
-		resetPw();
+		fetch('/api/auth/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email: emailInput, password: pwInput }),
+		})
+			.then((res) => res.json())
+			.then(({ email, userId }) => {
+				if (!email || !userId)
+					return alert('User not found. Please try again.');
+				setEmail(email);
+				setId(userId);
+				// setPassword(password);
+				auth.signin(email, userId, () => {
+					history.replace('/home');
+				});
+			})
+			.catch((err) => console.log('loginUser ERROR: ', err));
+
+		// resetEmail();
+		// resetPw();
 	};
 
 	return (
@@ -154,7 +189,7 @@ const Login = ({ registerUser, loginUser, ...rest }) => {
 							Create Account
 						</Button>
 						<Dialog open={open} onClose={handleClose}>
-							<Register registerUser={registerUser} setOpen={setOpen} />
+							<Register setOpen={setOpen} />
 						</Dialog>
 					</Paper>
 				</Slide>

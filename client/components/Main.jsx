@@ -125,7 +125,8 @@ const Main = ({ email, logOut, userId }) => {
 
 	return (
 		<>
-			<NavBar email={email} logOut={logOut} />
+			{/* <NavBar email={email} logOut={logOut} /> */}
+			<NavBar />
 			<Grid container justify="center" style={{ marginTop: 64 }}>
 				<Grid
 					id="back-to-top-anchor"

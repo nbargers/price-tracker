@@ -1,21 +1,23 @@
 import React from 'react';
-import Login from '../auth/Login';
+// import Login from '../auth/Login';
 import { Route } from 'react-router-dom';
+import { useAuth } from './useAuth';
 
 const PrivateRoute = ({
-	loginUser,
-	registerUser,
 	component: Component,
 	...rest
 }) => {
+	let auth = useAuth();
+	console.log(auth.user);
 	return (
 		<Route
 			{...rest}
 			render={() => {
-				return rest.email ? (
+				return auth.user.isAuthenticated ? (
 					<Component {...rest} />
 				) : (
-					<Login registerUser={registerUser} loginUser={loginUser} />
+					<Login /> 
+					// registerUser={registerUser} loginUser={loginUser} />
 				);
 			}}
 		/>

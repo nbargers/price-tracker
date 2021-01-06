@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useInput from '../hooks/useInput';
 import {
 	Button,
@@ -13,7 +13,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import useStyles from '../../style/theme';
 import inputCheck from '../../utils/inputCheck';
 
-const Register = ({ registerUser, setOpen, ...rest }) => {
+const Register = ({ setOpen, ...rest }) => {
+	
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [userId, setId] = useState('');
+
 	const [emailInput, updateEmail, resetEmail] = useInput('');
 	const [pwInput, updatePw, resetPw] = useInput('');
 	const [confirmPwInput, confirmUpdatePw, confirmResetPw] = useInput('');
@@ -29,11 +34,31 @@ const Register = ({ registerUser, setOpen, ...rest }) => {
 		const err = inputCheck(emailInput, pwInput, confirmPwInput);
 		if (err) return alert(err);
 
-		registerUser(emailInput, pwInput);
+		// registerUser(emailInput, pwInput);
 
-		resetEmail();
-		resetPw();
-		confirmResetPw();
+		setEmail(emailInput);
+		setPassword(pwInput);
+		
+		fetch('/api/auth/signup', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email, password }),
+		})
+			.then((res) => res.json())
+			.then(({ email, userId }) => {
+				console.log('register res:', email, userId);
+				setEmail(email);
+				setId(userId);
+				setPassword(password);
+			})
+			.catch((err) => console.log('regUser ERROR: ', err));
+
+		
+		// resetEmail();
+		// resetPw();
+		// confirmResetPw();
 	};
 
 	return (

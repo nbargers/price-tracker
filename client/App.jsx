@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import PrivateRoute from './components/routes/PrivateRoute';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
-import About from './components/about/About';
+// import About from './components/about/About';
 import Main from './components/Main';
+import NotFound from './components/NotFound';
 import {
 	BrowserRouter,
 	Switch,
@@ -24,42 +25,42 @@ const App = (props) => {
 		setEmail('');
 	};
 
-	const registerUser = (email, password) => {
-		fetch('/api/auth/signup', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ email, password }),
-		})
-			.then((res) => res.json())
-			.then(({ email, userId }) => {
-				console.log('register res:', email, userId);
-				setEmail(email);
-				setId(userId);
-				setPassword(password);
-			})
-			.catch((err) => console.log('regUser ERROR: ', err));
-	};
+	// const registerUser = (email, password) => {
+	// 	fetch('/api/auth/signup', {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json',
+	// 		},
+	// 		body: JSON.stringify({ email, password }),
+	// 	})
+	// 		.then((res) => res.json())
+	// 		.then(({ email, userId }) => {
+	// 			console.log('register res:', email, userId);
+	// 			setEmail(email);
+	// 			setId(userId);
+	// 			setPassword(password);
+	// 		})
+	// 		.catch((err) => console.log('regUser ERROR: ', err));
+	// };
 
-	const loginUser = (email, password) => {
-		fetch('/api/auth/login', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ email, password }),
-		})
-			.then((res) => res.json())
-			.then(({ email, userId }) => {
-				if (!email || !userId)
-					return alert('User not found. Please try again.');
-				setEmail(email);
-				setId(userId);
-				setPassword(password);
-			})
-			.catch((err) => console.log('loginUser ERROR: ', err));
-	};
+	// const loginUser = (email, password) => {
+	// 	fetch('/api/auth/login', {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json',
+	// 		},
+	// 		body: JSON.stringify({ email, password }),
+	// 	})
+	// 		.then((res) => res.json())
+	// 		.then(({ email, userId }) => {
+	// 			if (!email || !userId)
+	// 				return alert('User not found. Please try again.');
+	// 			setEmail(email);
+	// 			setId(userId);
+	// 			setPassword(password);
+	// 		})
+	// 		.catch((err) => console.log('loginUser ERROR: ', err));
+	// };
 
 	useEffect(() => {
 		if (!email) return;
@@ -73,40 +74,47 @@ const App = (props) => {
 	}, [main]);
 
 	return (
-		<BrowserRouter>
+		// <BrowserRouter>
 			<Switch>
-				<Route
+				{/* <Route
 					path="/register"
 					exact
-					render={(props) => (
-						<Register registerUser={registerUser} {...props} />
-					)}
-				/>
-				<Route path="/about" exact component={About} />
+					component={Register}
+					// render={(props) => (
+					// 	<Register registerUser={registerUser} {...props} />
+					// )}
+				/> */}
+				{/* <Route path="/about" exact component={About} /> */}
 				<Route
-					path="/login"
-					exact
-					render={(props) => (
-						<Login
-							loginUser={loginUser}
-							registerUser={registerUser}
-							{...props}
-						/>
-					)}
-				/>
-				<PrivateRoute
 					path="/"
+					exact
+					component={Login}
+					// render={(props) => (
+					// 	<Login
+					// 		// loginUser={loginUser}
+					// 		// registerUser={registerUser}
+					// 		{...props}
+					// 	/>
+					// )}
+				/>
+
+				<PrivateRoute path="/home" exact component={Main} />
+				{/* <PrivateRoute
+					path="/home"
 					exact
 					component={Main}
 					email={email}
-					password={password}
+					// password={password}
 					userId={userId}
-					loginUser={loginUser}
-					registerUser={registerUser}
+					// loginUser={loginUser}
+					// registerUser={registerUser}
 					logOut={logOut}
-				/>
+				/> */}
+
+				<Route path="*" component={NotFound} />
+
 			</Switch>
-		</BrowserRouter>
+		// </BrowserRouter>
 	);
 };
 
