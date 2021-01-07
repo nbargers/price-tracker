@@ -10,9 +10,9 @@ const authController = require("../controllers/authControllers.js");
 authRouter.post(
   "/signup",
   authController.createUser,
-  authController.setSSIDCookie,
+  authController.verifySession,
   (req, res) => {
-    res.status(200).json(res.locals.loginInfo);
+    res.status(200).json({ message: "Signed In" });
   }
 );
 
@@ -22,9 +22,9 @@ authRouter.post(
 authRouter.post(
   "/login",
   authController.verifyUser,
-  authController.setSSIDCookie,
+  authController.verifySession,
   (req, res) => {
-    res.status(200).json(res.locals.loginInfo); //contains {email, userId}
+    res.status(200).json({ message: "Signed In" }); //contains {email, userId}
   }
 );
 

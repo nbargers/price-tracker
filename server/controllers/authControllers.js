@@ -1,34 +1,69 @@
 const priceTrackerDB = require("../models/priceTrackerModel.js");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const authController = {};
 
 //Signup Controller- POST Request:
 authController.createUser = async (req, res, next) => {
-  if (req.body.email.length > 0 && req.body.password.length > 0) {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const { email, password } = req.body;
+  const checkDuplicateUser = `SELECT * FROM users WHERE email=$1`;
+  const checkUser = await priceTrackerDB.query(checkDuplicateUser, email);
 
-    let queryString = `
-    INSERT INTO users ( email, password) VALUES ($1, $2) RETURNING *
-    `; 
-    let values = [req.body.email, hashedPassword];
-
-    priceTrackerDB
-      .query(queryString, values)
-      .then((data) => {
-        res.locals.loginInfo = {};
-        res.locals.loginInfo.userId = data.rows[0]._id;
-        res.locals.loginInfo.email = req.body.email;
-        return next();
-      })
-      .catch((err) => {
-        console.log(err);
-        return next(err);
-      });
-  } else {
-    console.log("password or username rejected");
-    return res.status(418).json({ error: "invalid email or password" });
+  if (checkUser.rowCount) {
+    return next({
+      log: "authController.createUser: User already exists",
+      status: 409,
+      message: {
+        err: "User already exists",
+      },
+    });
   }
+
+  // if (email.length > 0 && password.length > 0) {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  let queryString = `
+    INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *
+    `;
+  let values = [email, hashedPassword];
+
+  priceTrackerDB
+    .query(queryString, values)
+    .then((data) => {
+      res.locals.id = data.rows[0]._id;
+      // res.locals.loginInfo = {};
+      // res.locals.loginInfo.userId = data.rows[0]._id;
+      // res.locals.loginInfo.email = req.body.email;
+      return next();
+    })
+    .catch((err) => {
+      console.log(err);
+      return next(err);
+    });
+};
+
+
+authController.verifySession = (req, res, next) => {
+  console.log('cookies', req.cookies);
+  const token = req.cookies.sessionToken;
+
+  jwt.verify(token, "price tracker", function (err, decoded) {
+    if (err) {
+      next({
+        log: "authController.verifySession: Session denied",
+        status: 406,
+        message: {
+          err: "Session denied",
+        },
+      });
+    } else {
+      res.locals.id = decoded.user;
+      console.log(res.locals.id);
+      console.log('verified')
+      next();
+    }
+  });
 };
 
 //SSIDCookie Controller:
@@ -42,7 +77,7 @@ authController.setSSIDCookie = (req, res, next) => {
   //second, save the ssid into the database.
   let queryString = `
   INSERT INTO sessions ( user_id, ssid) VALUES ($1, $2) RETURNING *
-  `; 
+  `;
   let values = [res.locals.loginInfo.userId, randomNumber];
 
   priceTrackerDB
@@ -60,10 +95,9 @@ authController.setSSIDCookie = (req, res, next) => {
 
 //Login Controller - POST Request:
 authController.verifyUser = (req, res, next) => {
-
   let queryString = `
     SELECT * FROM users WHERE email=$1
-    `; 
+    `;
   let values = [req.body.email];
 
   priceTrackerDB
@@ -74,9 +108,14 @@ authController.verifyUser = (req, res, next) => {
           .compare(req.body.password, data.rows[0].password)
           .then((isMatch) => {
             if (isMatch) {
-              res.locals.loginInfo = {};
-              res.locals.loginInfo.userId = data.rows[0]._id;
-              res.locals.loginInfo.email = req.body.email;
+              const id = data.rows[0]._id;
+              res.locals.id = id;
+              const token = jwt.sign({ user: `${id}` }, "price tracker");
+              res.locals.token = token;
+              res.cookie('sessionToken', token) 
+              // res.locals.loginInfo = {};
+              // res.locals.loginInfo.userId = data.rows[0]._id;
+              // res.locals.loginInfo.email = req.body.email;
               return next();
             } else {
               return res.status(400).json({ error: "invalid password" });

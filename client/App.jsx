@@ -51,12 +51,13 @@ const App = (props) => {
 			body: JSON.stringify({ email, password }),
 		})
 			.then((res) => res.json())
-			.then(({ email, userId }) => {
-				if (!email || !userId)
-					return alert('User not found. Please try again.');
-				setEmail(email);
-				setId(userId);
-				setPassword(password);
+			.then(({ message}) => {
+				console.log(message)
+				// if (!email || !userId)
+				// 	return alert('User not found. Please try again.');
+				// setEmail(email);
+				// setId(userId);
+				// setPassword(password);
 			})
 			.catch((err) => console.log('loginUser ERROR: ', err));
 	};

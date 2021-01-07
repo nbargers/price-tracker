@@ -43,7 +43,7 @@ productController.getProducts = (req, res, next) => {
 //Add Product Controller- POST Request:
 productController.addProduct = async (req, res, next) => {
   // front end sends user_id and google_url only.  Then we use puppeteer to scrape the following:
-  const { google_url } = req.body; //from websraping and frontend
+  const { google_url, desired_price } = req.body; //from websraping and frontend
   const { user } = req.params;
   let productInfo = {};
 
@@ -73,11 +73,12 @@ productController.addProduct = async (req, res, next) => {
   // } else {
     //If does not already exsit:
     //Add to products table and return product_id. Then add product_id to object
-    const newProductId = await priceTrackerDB.query(
-      `INSERT INTO products (product_name, image_url, google_url, user_id) VALUES ($1,$2,$3,$4) returning products._id`,
-      [productInfo.product_name, productInfo.image_url, productInfo.google_url, user]
+    const newProduct = await priceTrackerDB.query(
+      `INSERT INTO products (product_name, image_url, google_url, user_id, desired_price) VALUES ($1,$2,$3,$4,$5) returning *`,
+      [productInfo.product_name, productInfo.image_url, productInfo.google_url, user, desired_price]
     );
-    productId = newProductId.rows[0]._id;
+    // productId = newProductId.rows[0]._id;
+    res.locals.product = newProduct.rows[0]
   // }
 
   //Add to user_to_products table using product_id:
@@ -88,7 +89,7 @@ productController.addProduct = async (req, res, next) => {
   const lowestDailyPriceQuery = `INSERT into lowest_daily_price (product_id, store_name, lowest_daily_price,	store_url) VALUES ($1,$2,$3,$4)`;
 
   const lowestDailyPriceValues = [
-    productId,
+    newProduct.rows[0]._id,
     productInfo.store_name,
     productInfo.lowest_daily_price,
     productInfo.store_url,
