@@ -1,28 +1,40 @@
-import React, { useContext, createContext, useState } from "react";
+import React, { useContext, createContext } from 'react';
 
 const authContext = createContext();
 
 function useProvideAuth() {
-    const [user, setUser] = useState({ userId: null, email: '', isAuthenticated: false });
-   
-    const signin = (email, userId, callback) => {
-      setUser({...user, userId, email, isAuthenticated: true});
-      callback();
+  const signin = (email, userId, callback) => {
+    const loggedInUser = {
+      userId,
+      email,
+      isAuthenticated: true,
     };
+    localStorage.setItem('active-user', JSON.stringify(loggedInUser));
+    callback();
+  };
 
-    const signout = (email, userId, callback) => {
-        setUser({...user, userId, email, isAuthenticated: false});
-        callback();
-    };
+  const signout = (callback) => {
+    localStorage.removeItem('active-user');
+    callback();
+  };
 
-    return {user, signin, signout};
+  const getUser = () => {
+    const user = JSON.parse(localStorage.getItem('active-user'));
+    return user || null;
+  };
+
+  return {
+    getUser,
+    signin,
+    signout,
+  };
 }
 
-export const ProvideAuth = ({ children }) =>  {
-    const auth = useProvideAuth();
-    return <authContext.Provider value={auth}>{children}</authContext.Provider>;
-}
+export const ProvideAuth = ({ children }) => {
+  const auth = useProvideAuth();
+  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+};
 
 export const useAuth = () => {
-    return useContext(authContext);
+  return useContext(authContext);
 };

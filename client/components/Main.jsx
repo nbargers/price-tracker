@@ -6,163 +6,169 @@ import Spinner from './search/Spinner';
 import ScrollTop from './product/ScrollTop';
 import { Grid, Fab } from '@material-ui/core';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import { useHistory } from 'react-router-dom';
+import { useAuth } from '../components/routes/useAuth';
 
-const Main = ({ email, logOut, userId }) => {
-	const postObj = useRef({});
+const Main = () => {
+  const postObj = useRef({});
+  const history = useHistory();
+  const auth = useAuth();
+  const user = auth.getUser();
 
-	//state
-	const [list, setList] = useState([]);
-	const [fetchProduct, setFetch] = useState(false);
-	const [productId, setProductId] = useState(null);
-	const [spinner, setSpinner] = useState(false);
+  const userId = user ? user.userId : null;
 
-	const startSpinner = () => {
-		console.log('spinner heard');
-		setSpinner(true);
-	};
+  //state
+  const [list, setList] = useState([]);
+  const [fetchProduct, setFetch] = useState(false);
+  const [productId, setProductId] = useState(null);
+  const [spinner, setSpinner] = useState(false);
 
-	//get all products from db
-	const getAllProducts = () => {
-		fetch(`/api/products/${userId}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-			.then((res) => res.json())
-			.then(({ products }) => setList(products))
-			.catch((err) => console.log(err));
-	};
+  const startSpinner = () => {
+    console.log('spinner heard');
+    setSpinner(true);
+  };
 
-	//add product to userList
-	const addProduct = (stateObj) => {
-		Object.assign(postObj.current, stateObj);
-		setFetch(true);
-	};
+  //get all products from db
+  const getAllProducts = () => {
+    fetch(`/api/products/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then(({ products }) => setList(products))
+      .catch((err) => console.log(err));
+  };
 
-	//delete product from userList
-	const deleteProduct = (productId) => setProductId(productId);
+  //add product to userList
+  const addProduct = (stateObj) => {
+    Object.assign(postObj.current, stateObj);
+    setFetch(true);
+  };
 
-	//useEffect: userId/CDM
-	useEffect(() => {
-		if (!userId) return;
-		getAllProducts();
-	}, [userId]);
+  //delete product from userList
+  const deleteProduct = (productId) => setProductId(productId);
 
-	//useEffect: add product
-	useEffect(() => {
-		if (!fetchProduct) return;
+  //useEffect: userId/CDM
+  useEffect(() => {
+    if (!userId) return;
+    getAllProducts();
+  }, [userId]);
 
-		const google_url = postObj.current.productUrl;
-		const product_name = postObj.current.productName;
-		const image_url = postObj.current.imageUrl;
-		const store_name = postObj.current.storeName;
-		const lowest_daily_price = postObj.current.productPrice;
-		const product_id = postObj.current.productId;
-		const date = postObj.current.date;
+  //useEffect: add product
+  useEffect(() => {
+    if (!fetchProduct) return;
 
-		console.log('track button heard');
+    const google_url = postObj.current.productUrl;
+    const product_name = postObj.current.productName;
+    const image_url = postObj.current.imageUrl;
+    const store_name = postObj.current.storeName;
+    const lowest_daily_price = postObj.current.productPrice;
+    const product_id = postObj.current.productId;
+    const date = postObj.current.date;
 
-		//make POST request
-		fetch(`/api/products/${userId}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				google_url,
-				userId,
-				product_name,
-				image_url,
-				store_name,
-				lowest_daily_price,
-				product_id,
-				date,
-			}),
-		})
-			.then((res) => res.json())
-			.then((res) => {
-				console.log(res);
-				getAllProducts();
-				setSpinner(false);
-			})
-			.catch((err) => {
-				console.log('main ue addProduct', err);
-				setSpinner(false);
-				alert('Uh oh! Seems like the link is broken. Please try again.');
-			});
+    console.log('track button heard');
 
-		Object.getOwnPropertyNames(postObj.current).forEach(
-			(property) => delete postObj.current[property]
-		);
-		setFetch(false);
-	}, [fetchProduct]);
+    //make POST request
+    fetch(`/api/products/${userId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        google_url,
+        userId,
+        product_name,
+        image_url,
+        store_name,
+        lowest_daily_price,
+        product_id,
+        date,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        getAllProducts();
+        setSpinner(false);
+      })
+      .catch((err) => {
+        console.log('main ue addProduct', err);
+        setSpinner(false);
+        alert('Uh oh! Seems like the link is broken. Please try again.');
+      });
 
-	//useEffect: delete product
-	useEffect(() => {
-		if (!productId) return;
+    Object.getOwnPropertyNames(postObj.current).forEach(
+      (property) => delete postObj.current[property]
+    );
+    setFetch(false);
+  }, [fetchProduct]);
 
-		const product_id = productId;
+  //useEffect: delete product
+  useEffect(() => {
+    if (!productId) return;
 
-		fetch(`/api/products/${userId}/${productId}`, {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ product_id }),
-		})
-			.then((res) => res.json())
-			.then((res) => {
-				console.log(res);
-				getAllProducts();
-			})
-			.catch((err) => console.log('main ue addProduct', err));
+    const product_id = productId;
 
-		setProductId(null);
-	}, [productId]);
+    fetch(`/api/products/${userId}/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ product_id }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        getAllProducts();
+      })
+      .catch((err) => console.log('main ue addProduct', err));
 
-	if (spinner) return <Spinner />;
+    setProductId(null);
+  }, [productId]);
 
-	return (
-		<>
-			{/* <NavBar email={email} logOut={logOut} /> */}
-			<NavBar />
-			<Grid container justify="center" style={{ marginTop: 64 }}>
-				<Grid
-					id="back-to-top-anchor"
-					container
-					item
-					justify="center"
-					xs={12}
-					style={{ margin: '2rem 0' }}
-				>
-					<Search
-						userId={userId}
-						addProduct={addProduct}
-						startSpinner={startSpinner}
-						getAllProducts={getAllProducts}
-					/>
-				</Grid>
-				<Grid
-					container
-					item
-					justify="center"
-					align="center"
-					spacing={4}
-					xs={12}
-					md={10}
-					xl={9}
-				>
-					<ProductList list={list} deleteProduct={deleteProduct} />
-				</Grid>
-			</Grid>
-			<ScrollTop>
-				<Fab color="primary" size="small" aria-label="scroll back to top">
-					<KeyboardArrowUpIcon />
-				</Fab>
-			</ScrollTop>
-		</>
-	);
+  if (spinner) return <Spinner />;
+
+  return (
+    <>
+      <NavBar />
+      <Grid container justify="center" style={{ marginTop: 64 }}>
+        <Grid
+          id="back-to-top-anchor"
+          container
+          item
+          justify="center"
+          xs={12}
+          style={{ margin: '2rem 0' }}
+        >
+          <Search
+            userId={userId}
+            addProduct={addProduct}
+            startSpinner={startSpinner}
+            getAllProducts={getAllProducts}
+          />
+        </Grid>
+        <Grid
+          container
+          item
+          justify="center"
+          align="center"
+          spacing={4}
+          xs={12}
+          md={10}
+          xl={9}
+        >
+          <ProductList list={list} deleteProduct={deleteProduct} />
+        </Grid>
+      </Grid>
+      <ScrollTop>
+        <Fab color="primary" size="small" aria-label="scroll back to top">
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </ScrollTop>
+    </>
+  );
 };
 
 export default Main;
