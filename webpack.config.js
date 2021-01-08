@@ -35,6 +35,11 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
+        bypass: (req, res, proxyOptions) => {
+          if (req.headers.accept.indexOf('html') !== -1) {
+            return '/index.html';
+          }
+        },
       },
     },
   },
