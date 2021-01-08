@@ -2,12 +2,18 @@ const priceTrackerDB = require("./priceTrackerModel.js");
 
 //Table Queries:
 
+//Adding in Desired Price, Price History, 
 const productsTable = `
   CREATE TABLE products (
     _id SERIAL,
     product_name VARCHAR NOT NULL,
     image_url VARCHAR NOT NULL,
     google_url VARCHAR UNIQUE
+    desired_price DECIMAL,  
+    price_history DECIMAL[],
+    user_id INT NOT NULL,
+    category VARCHAR,
+    FOREIGN KEY (user_id) references users(_id)
     PRIMARY KEY (_id)
   )`;
 
@@ -32,13 +38,15 @@ const usersTable = `
  )
  `;
 
-const usersToProductsTable = ` 
-  CREATE TABLE users_to_products (
-    _id SERIAL,
-    user_id INT NOT NULL references users(_id),
-    product_id INT NOT NULL references products(_id),
-    PRIMARY KEY (_id)
-  )`;
+//Changed Relationship to a Foreign Key (between the Products Table and Users Table)
+
+// const usersToProductsTable = ` 
+//   CREATE TABLE users_to_products (
+//     _id SERIAL,
+//     user_id INT NOT NULL references users(_id),
+//     product_id INT NOT NULL references products(_id),
+//     PRIMARY KEY (_id)
+//   )`;
 
 const sessionsTable = `
 CREATE TABLE sessions (
