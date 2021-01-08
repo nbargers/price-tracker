@@ -11,7 +11,8 @@ const productsTable = `
     google_url VARCHAR UNIQUE
     desired_price DECIMAL,  
     price_history DECIMAL[],
-    user_id INT NOT NULL
+    user_id INT NOT NULL,
+    category VARCHAR,
     FOREIGN KEY (user_id) references users(_id)
     PRIMARY KEY (_id)
   )`;
