@@ -16,7 +16,7 @@ authRouter.post(
       if(err){
         res.status(403).json({message: 'Session token authorization failed'})
       } else {
-        res.status(200).json({ message: "Signed In", token: res.locals.token });
+        res.status(200).json({ message: "Signed In", token: res.locals.token, email: res.locals.email, id: res.locals.id });
       }
     })
   }
@@ -33,7 +33,7 @@ authRouter.post(
       if(err){
         res.status(403).json({message: 'Session token authorization failed'})
       } else {
-        res.status(200).json({ message: "Signed In", user: authData, token: res.locals.token });
+        res.status(200).json({ message: "Signed In", token: res.locals.token, id: res.locals.id, email: res.locals.email });
       }
     })
   }
