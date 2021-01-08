@@ -3,10 +3,11 @@ import React, { useContext, createContext } from 'react';
 const authContext = createContext();
 
 function useProvideAuth() {
-  const signin = (email, userId, callback) => {
+  const signin = (email, userId, token, callback) => {
     const loggedInUser = {
       userId,
       email,
+      token,
       isAuthenticated: true,
     };
     localStorage.setItem('active-user', JSON.stringify(loggedInUser));

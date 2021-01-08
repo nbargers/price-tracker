@@ -60,8 +60,8 @@ const Register = ({ setOpen, ...rest }) => {
           throw error;
         });
       })
-      .then(({ email, userId }) => {
-        auth.signin(email, userId, () => {
+      .then(({ email, userId, token }) => {
+        auth.signin(email, userId, token, () => {
           history.replace('/home');
         });
       })
