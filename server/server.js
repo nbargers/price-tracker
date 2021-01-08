@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const authRouter = require("./routes/authRouter");
 const productRouter = require("./routes/productRouter");
+const searchRouter = require("./routes/searchRouter");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
 
@@ -21,6 +22,9 @@ app.use("/api/auth", authRouter);
 
 //localhost:8080/api/products/getproducts
 app.use("/api/products", productRouter);
+
+////localhost:8080/api/search/
+app.use("/api/search", searchRouter)
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../index.html"));
