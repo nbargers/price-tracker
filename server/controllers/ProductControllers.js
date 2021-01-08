@@ -120,7 +120,7 @@ productController.deleteProduct = (req, res, next) => {
   const deleteProduct = `DELETE FROM products WHERE _id=$1`;
 
   priceTrackerDB
-    .query(deleteProduct, id)
+    .query(deleteProduct, [id])
     .then((data) => {
 
       return next();
@@ -133,4 +133,25 @@ productController.deleteProduct = (req, res, next) => {
     });
 };
 
+
+//Edit product desired price
+productController.editProduct = async (req, res, next) => {
+  const { user, id } = req.params;
+  const {desiredPrice} = req.body;
+
+  try {
+    const editProduct = 'UPDATE products SET desired_price =$1'
+    const product = await priceTrackerDB.query(editProduct, [desiredPrice])
+    res.locals.product = product.rows[0];
+    next()
+  } catch (error) {
+    next({
+      log: "productController.editProduct: Internal server error",
+      status: 500,
+      message: {
+        err: "Internal Server Error",
+      },
+    })
+  }
+}
 module.exports = productController;

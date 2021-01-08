@@ -20,14 +20,26 @@ app.use("/build", express.static(path.join(__dirname, "../build")));
 app.use("/api/auth", authRouter);
 
 //localhost:8080/api/products/getproducts
-app.use("/api", productRouter);
+app.use("/api/products", productRouter);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../index.html"));
 });
 
-app.get("/api/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../index.html"));
+//Global Error handler
+app.use((err, req, res, next) => {
+  console.log('Global Error', err);
+  const defaultError = {
+    log: 'Express error handler caught: unknown middleware error',
+    status: 400,
+    message: {
+      err: 'Unexpected error occured',
+    },
+  };
+
+  const errObj = Object.assign(defaultError, err);
+  console.log('SEREVER ERROR:', errObj.log);
+  return res.status(errObj.status).json(errObj.message);
 });
 
 app.listen(PORT, () => console.log("Server Running On Port " + PORT));

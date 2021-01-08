@@ -8,7 +8,7 @@ const authController = {};
 authController.createUser = async (req, res, next) => {
   const { email, password } = req.body;
   const checkDuplicateUser = `SELECT * FROM users WHERE email=$1`;
-  const checkUser = await priceTrackerDB.query(checkDuplicateUser, email);
+  const checkUser = await priceTrackerDB.query(checkDuplicateUser, [email]);
 
   if (checkUser.rowCount) {
     return next({
@@ -31,7 +31,10 @@ authController.createUser = async (req, res, next) => {
   priceTrackerDB
     .query(queryString, values)
     .then((data) => {
-      res.locals.id = data.rows[0]._id;
+      const id = data.rows[0]._id;
+      res.locals.id = id;
+      const token = jwt.sign({ user: `${id}` }, "price tracker", {expiresIn : "30m"});
+      res.locals.token = token;
       // res.locals.loginInfo = {};
       // res.locals.loginInfo.userId = data.rows[0]._id;
       // res.locals.loginInfo.email = req.body.email;
@@ -45,53 +48,54 @@ authController.createUser = async (req, res, next) => {
 
 
 authController.verifySession = (req, res, next) => {
-  console.log('cookies', req.cookies);
-  const token = req.cookies.sessionToken;
+  //Get auth header value
+  const bearerHeader = req.headers['authorization'];
 
-  jwt.verify(token, "price tracker", function (err, decoded) {
-    if (err) {
-      next({
-        log: "authController.verifySession: Session denied",
-        status: 406,
-        message: {
-          err: "Session denied",
-        },
-      });
-    } else {
-      res.locals.id = decoded.user;
-      console.log(res.locals.id);
-      console.log('verified')
-      next();
-    }
-  });
+  //Check if bearer is undefined
+  if(typeof bearerHeader != 'undefined'){
+    //split at the space
+    const bearer = bearerHeader.split(' ');
+    //set token variable
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+   return next();
+  } else {
+    return next({
+      log: "authController.veriftySession: Session token incorrect",
+      status: 403,
+      message: {
+        err: "Session token incorrect. Access forbidden.",
+      },
+    })
+  }
 };
 
 //SSIDCookie Controller:
-authController.setSSIDCookie = (req, res, next) => {
-  //First, set cookie on the client to a random number:
-  let randomNumber = Math.floor(Math.random() * 1000000);
-  let options = { maxAge: 90000000, httpOnly: true };
+// authController.setSSIDCookie = (req, res, next) => {
+//   //First, set cookie on the client to a random number:
+//   let randomNumber = Math.floor(Math.random() * 1000000);
+//   let options = { maxAge: 90000000, httpOnly: true };
 
-  res.cookie("ssid", randomNumber, options);
+//   res.cookie("ssid", randomNumber, options);
 
-  //second, save the ssid into the database.
-  let queryString = `
-  INSERT INTO sessions ( user_id, ssid) VALUES ($1, $2) RETURNING *
-  `;
-  let values = [res.locals.loginInfo.userId, randomNumber];
+//   //second, save the ssid into the database.
+//   let queryString = `
+//   INSERT INTO sessions ( user_id, ssid) VALUES ($1, $2) RETURNING *
+//   `;
+//   let values = [res.locals.loginInfo.userId, randomNumber];
 
-  priceTrackerDB
-    .query(queryString, values)
-    .then((data) => {
-      return next();
-    })
-    .catch((err) => {
-      console.log(err);
-      return next(err);
-    });
+//   priceTrackerDB
+//     .query(queryString, values)
+//     .then((data) => {
+//       return next();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       return next(err);
+//     });
 
-  return next();
-};
+//   return next();
+// };
 
 //Login Controller - POST Request:
 authController.verifyUser = (req, res, next) => {
@@ -110,7 +114,7 @@ authController.verifyUser = (req, res, next) => {
             if (isMatch) {
               const id = data.rows[0]._id;
               res.locals.id = id;
-              const token = jwt.sign({ user: `${id}` }, "price tracker");
+              const token = jwt.sign({ user: `${id}` }, "price tracker", {expiresIn : "30m"});
               res.locals.token = token;
               res.cookie('sessionToken', token) 
               // res.locals.loginInfo = {};
@@ -118,12 +122,24 @@ authController.verifyUser = (req, res, next) => {
               // res.locals.loginInfo.email = req.body.email;
               return next();
             } else {
-              return res.status(400).json({ error: "invalid password" });
+              return next({
+                log: "authController.veriftyUser: User not verified",
+                status: 400,
+                message: {
+                  err: "Invalid credentials",
+                },
+              })
             }
           });
       } else {
         console.log("invalid email or password");
-        return res.status(200).json({ error: "invalid email or password" });
+        return next({
+          log: "authController.veriftyUser: User not verified",
+          status: 406,
+          message: {
+            err: "Invalid Credentials.",
+          },
+        })
       }
     })
     .catch((err) => {
@@ -132,4 +148,10 @@ authController.verifyUser = (req, res, next) => {
     });
 };
 
+authController.logout = (req, res, next) => {
+//clear session
+sessionStorage.clear()
+res.locals.message = 'Successfully logged out';
+next()
+}
 module.exports = authController;
