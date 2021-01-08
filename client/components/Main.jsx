@@ -70,7 +70,7 @@ const Main = () => {
 
     console.log('track button heard');
 
-    //make POST request
+    //make POST request - Actual request passed to the backend.
     fetch(`/api/products/${userId}`, {
       method: 'POST',
       headers: {
@@ -142,12 +142,13 @@ const Main = () => {
           xs={12}
           style={{ margin: '2rem 0' }}
         >
-          <Search
+          <Search />
+          {/* <Search
             userId={userId}
             addProduct={addProduct}
             startSpinner={startSpinner}
             getAllProducts={getAllProducts}
-          />
+          /> */}
         </Grid>
         <Grid
           container
