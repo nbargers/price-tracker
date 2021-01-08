@@ -32,6 +32,7 @@ authController.createUser = async (req, res, next) => {
     .query(queryString, values)
     .then((data) => {
       const id = data.rows[0]._id;
+      res.locals.email = data.rows[0].email;
       res.locals.id = id;
       const token = jwt.sign({ user: `${id}` }, "price tracker", {expiresIn : "30m"});
       res.locals.token = token;
@@ -113,6 +114,7 @@ authController.verifyUser = (req, res, next) => {
           .then((isMatch) => {
             if (isMatch) {
               const id = data.rows[0]._id;
+              res.locals.email = data.rows[0].email;
               res.locals.id = id;
               const token = jwt.sign({ user: `${id}` }, "price tracker", {expiresIn : "30m"});
               res.locals.token = token;
