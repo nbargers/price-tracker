@@ -1,6 +1,6 @@
 const express = require("express");
 const productRouter = express.Router();
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const productController = require("../controllers/ProductControllers");
 const authController = require("../controllers/authControllers.js");
 
@@ -9,62 +9,53 @@ const authController = require("../controllers/authControllers.js");
 //Get All Products:
 //GET Request
 productRouter.get(
-  "/products/:user",
+  "/products",
+  authController.retrieveToken,
+  authController.verifyToken,
   productController.getProducts,
-  authController.verifySession,
+  
   (req, res) => {
-    jwt.verify(req.token, 'price tracker', (err, authData) => {
-      if(err){
-        res.status(403).json({message: 'Session token authorization failed'});
-      } else {
-        res.status(200).json({ products: res.locals.products });
-      }
-    })
+    res.status(200).json({ products: res.locals.products });
   }
 );
 
 //Add One Product:
 //POST Request
 productRouter.post(
-  "/products/:user",
+  "/products",
+  authController.retrieveToken,
+  authController.verifyToken,
   productController.addProduct,
-  authController.verifySession,
   (req, res) => {
-    jwt.verify(req.token, 'price tracker', (err, authData) => {
-      if(err){
-        res.status(403).json({message: 'Session token authorization failed'});
-      }else {
-        res.status(200).json({ product: res.locals.product });
-      }
-    })
+    res.status(200).json({ product: res.locals.product });
   }
 );
 
 //Delete One Product:
 //DELETE Request
 productRouter.delete(
-  "/products/:user/:id",
+  "/products/:id",
+   authController.retrieveToken,
+  authController.verifyToken,
   productController.deleteProduct,
-  authController.verifySession,
   (req, res) => {
-    jwt.verify(req.token, 'price tracker', (err, authData) =>{
-      if(err){
-        res.status(403).json({message: 'Session token authorization failed'});
-      } else {
-        res.status(200).json("Delete product");
-      }
-    })
+    res.status(200).json("Delete product");
   }
 );
 
-productRouter.put('/products/:user/:id', productController.editProduct, authController.verifySession, (req, res) => {
-  jwt.verify(req.token, 'price token', (err, authData) => {
-    if(err){
-      res.status(403).json({message: 'Session token authorization failed'});
-    } else {
-      res.status(200).json({message: 'Product desired price updated', product: res.locals.product})
-    }
-  })
-})
+productRouter.put(
+  "/products/:id",
+  authController.retrieveToken,
+  authController.verifyToken,
+  productController.editProduct,
+  (req, res) => {
+    res
+      .status(200)
+      .json({
+        message: "Product desired price updated",
+        product: res.locals.product,
+      });
+  }
+);
 
 module.exports = productRouter;

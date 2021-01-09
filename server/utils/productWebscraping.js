@@ -1,4 +1,8 @@
 const puppeteer = require("puppeteer");
+const schedule = require('node-schedule');
+const fetch = require("node-fetch");
+const priceTrackerDB = require("../models/priceTrackerModel.js");
+
 
 /*
 This file contains a function that webscrapes a google URL and outputs all the necessary info needed into an object including: 
@@ -10,6 +14,22 @@ productInfo Object = {
   image_url
 }
 */
+
+//set a node  schedule to run the file everyday at 12am and noon
+//need to update every product in the products table during this call
+//need to update the lowest_daily_price table
+//need to send an email to user if the desired price is equal or less than the desired price
+//call this function in the server.js file to run continuously
+
+
+//query the database to get all the products
+const updatePrices = async() => {
+
+  const retrieveProducts = 'SELECT * FROM products'
+  const products = await priceTrackerDB.query(retrieveProducts);
+
+  
+}
 
 //MAIN Function:
 const getProductInfo = async (url) => {
@@ -67,5 +87,7 @@ const getProductInfo = async (url) => {
 
   return productInfo;
 };
+
+//Export correct file to be used in server.js
 
 module.exports = getProductInfo;

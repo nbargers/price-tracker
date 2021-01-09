@@ -20,7 +20,6 @@ authController.createUser = async (req, res, next) => {
     });
   }
 
-  // if (email.length > 0 && password.length > 0) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   let queryString = `
@@ -34,69 +33,51 @@ authController.createUser = async (req, res, next) => {
       const id = data.rows[0]._id;
       res.locals.email = data.rows[0].email;
       res.locals.id = id;
-      const token = jwt.sign({ user: `${id}` }, "price tracker", {expiresIn : "30m"});
+      const token = jwt.sign({ user: `${id}` }, "price tracker", {
+        expiresIn: "30m",
+      });
       res.locals.token = token;
-      // res.locals.loginInfo = {};
-      // res.locals.loginInfo.userId = data.rows[0]._id;
-      // res.locals.loginInfo.email = req.body.email;
       return next();
     })
     .catch((err) => {
       console.log(err);
-      return next(err);
+      00;
     });
 };
 
-
-authController.verifySession = (req, res, next) => {
+authController.retrieveToken = (req, res, next) => {
   //Get auth header value
-  const bearerHeader = req.headers['authorization'];
+  const bearerHeader = req.headers["authorization"];
 
   //Check if bearer is undefined
-  if(typeof bearerHeader != 'undefined'){
+  if (typeof bearerHeader != "undefined") {
     //split at the space
-    const bearer = bearerHeader.split(' ');
+    const bearer = bearerHeader.split(" ");
     //set token variable
     const bearerToken = bearer[1];
-    req.token = bearerToken;
-   return next();
+    res.locals.token = bearerToken;
+    return next();
   } else {
     return next({
-      log: "authController.veriftySession: Session token incorrect",
+      log: "authController.verifySession: Session token incorrect",
       status: 403,
       message: {
         err: "Session token incorrect. Access forbidden.",
       },
-    })
+    });
   }
 };
 
-//SSIDCookie Controller:
-// authController.setSSIDCookie = (req, res, next) => {
-//   //First, set cookie on the client to a random number:
-//   let randomNumber = Math.floor(Math.random() * 1000000);
-//   let options = { maxAge: 90000000, httpOnly: true };
-
-//   res.cookie("ssid", randomNumber, options);
-
-//   //second, save the ssid into the database.
-//   let queryString = `
-//   INSERT INTO sessions ( user_id, ssid) VALUES ($1, $2) RETURNING *
-//   `;
-//   let values = [res.locals.loginInfo.userId, randomNumber];
-
-//   priceTrackerDB
-//     .query(queryString, values)
-//     .then((data) => {
-//       return next();
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       return next(err);
-//     });
-
-//   return next();
-// };
+authController.verifyToken = (req, res, next) => {
+  jwt.verify(res.locals.token, "price tracker", (err, data) => {
+    if (err) {
+      res.status(403).json({ message: "Session token authorization failed" });
+    } else {
+      res.locals.userId = data.user
+      next()
+    }
+  });
+};
 
 //Login Controller - POST Request:
 authController.verifyUser = (req, res, next) => {
@@ -116,12 +97,11 @@ authController.verifyUser = (req, res, next) => {
               const id = data.rows[0]._id;
               res.locals.email = data.rows[0].email;
               res.locals.id = id;
-              const token = jwt.sign({ user: `${id}` }, "price tracker", {expiresIn : "30m"});
+              const token = jwt.sign({ user: `${id}` }, "price tracker", {
+                expiresIn: "30m",
+              });
               res.locals.token = token;
-              res.cookie('sessionToken', token) 
-              // res.locals.loginInfo = {};
-              // res.locals.loginInfo.userId = data.rows[0]._id;
-              // res.locals.loginInfo.email = req.body.email;
+              res.cookie("sessionToken", token);
               return next();
             } else {
               return next({
@@ -130,7 +110,7 @@ authController.verifyUser = (req, res, next) => {
                 message: {
                   err: "Invalid credentials",
                 },
-              })
+              });
             }
           });
       } else {
@@ -141,7 +121,7 @@ authController.verifyUser = (req, res, next) => {
           message: {
             err: "Invalid Credentials.",
           },
-        })
+        });
       }
     })
     .catch((err) => {
@@ -151,9 +131,8 @@ authController.verifyUser = (req, res, next) => {
 };
 
 authController.logout = (req, res, next) => {
-//clear session
-sessionStorage.clear()
-res.locals.message = 'Successfully logged out';
-next()
-}
+  res.locals.message = "Successfully logged out";
+  next();
+};
+
 module.exports = authController;
