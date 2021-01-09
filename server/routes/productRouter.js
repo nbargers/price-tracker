@@ -1,19 +1,19 @@
-const express = require("express");
+const express = require('express');
 const productRouter = express.Router();
-const jwt = require("jsonwebtoken");
-const productController = require("../controllers/ProductControllers");
-const authController = require("../controllers/authControllers.js");
+const jwt = require('jsonwebtoken');
+const productController = require('../controllers/ProductControllers');
+const authController = require('../controllers/authControllers.js');
 
 //Product Routers:
 
 //Get All Products:
 //GET Request
 productRouter.get(
-  "/products",
+  '/products',
   authController.retrieveToken,
   authController.verifyToken,
   productController.getProducts,
-  
+
   (req, res) => {
     res.status(200).json({ products: res.locals.products });
   }
@@ -22,7 +22,7 @@ productRouter.get(
 //Add One Product:
 //POST Request
 productRouter.post(
-  "/products",
+  '/',
   authController.retrieveToken,
   authController.verifyToken,
   productController.addProduct,
@@ -34,27 +34,25 @@ productRouter.post(
 //Delete One Product:
 //DELETE Request
 productRouter.delete(
-  "/products/:id",
-   authController.retrieveToken,
+  '/products/:id',
+  authController.retrieveToken,
   authController.verifyToken,
   productController.deleteProduct,
   (req, res) => {
-    res.status(200).json("Delete product");
+    res.status(200).json('Delete product');
   }
 );
 
 productRouter.put(
-  "/products/:id",
+  '/products/:id',
   authController.retrieveToken,
   authController.verifyToken,
   productController.editProduct,
   (req, res) => {
-    res
-      .status(200)
-      .json({
-        message: "Product desired price updated",
-        product: res.locals.product,
-      });
+    res.status(200).json({
+      message: 'Product desired price updated',
+      product: res.locals.product,
+    });
   }
 );
 

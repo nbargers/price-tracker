@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import NavBar from './nav/NavBar';
-// import ProductList from './product/ProductList';
+import ProductList from './product/ProductList';
 import Search from './search/Search';
 import Spinner from './search/Spinner';
 import ScrollTop from './product/ScrollTop';
@@ -30,7 +30,7 @@ const Main = () => {
     setSpinner(true);
   };
 
-  //get all products from db
+  //get all products from search API
   const getSearchedProducts = (products) => {
     setSearchResults(products);
   };
@@ -42,7 +42,7 @@ const Main = () => {
   // };
 
   // //delete product from userList
-  // const deleteProduct = (productId) => setProductId(productId);
+  const deleteProduct = (productId) => setProductId(productId);
 
   //useEffect: userId/CDM
   // useEffect(() => {
@@ -128,7 +128,7 @@ const Main = () => {
   return (
     <>
       <NavBar />
-      <Grid container justify="center" style={{ marginTop: 64 }}>
+      <Grid container style={{ marginTop: 64 }}>
         <Grid
           id="back-to-top-anchor"
           container
@@ -137,20 +137,18 @@ const Main = () => {
           xs={12}
           style={{ margin: '2rem 0' }}
         >
-          <Search />
+          <Search getSearchedProducts={getSearchedProducts} />
         </Grid>
         <Grid
           container
-          item
-          justify="center"
-          align="center"
-          spacing={4}
-          xs={12}
-          md={10}
-          xl={9}
+          spacing={3}
+          direction="row"
+          style={{
+            padding: '50px',
+          }}
         >
           <SearchList searchResults={searchResults} />
-          {/* <ProductList list={list} deleteProduct={deleteProduct} /> */}
+          {/* <ProductList list={searchResults} deleteProduct={deleteProduct} /> */}
         </Grid>
       </Grid>
       <ScrollTop>

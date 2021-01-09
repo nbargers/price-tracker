@@ -11,7 +11,7 @@ import Response from '../alert/response';
 import data from '../dummyB/new-results.json';
 
 const Search = ({ getSearchedProducts }) => {
-  const firstRender = useRef(true);
+  // const firstRender = useRef(true);
   const [searchVal, handleSearchVal, resetSearch] = useInput('');
   // const [urlInput, setUrl, resetUrl] = useInput('');
   // const [results, setResults] = useState([]);
@@ -45,33 +45,30 @@ const Search = ({ getSearchedProducts }) => {
       hide: true,
     });
 
-    toggler();
+    // toggler();
 
-    // dev codes
-    // const goodUrl = 'google.com/shopping/product/';
-
-    // const results = data.shopping_results;
-    // const items = data.shopping_results.filter((item) => {
-    //   return item.link.includes(goodUrl);
-    // });
-
-    // console.log(items);
-
-    // getSearchedProducts(items);
-
-    // console.log(results.length);
-
-    // toggler(true);
     ///url replace api/search/${searchValue}
     fetch(`/api/search-results`)
-      .then((response) => response.json())
-      .then((response) => {
-        console.log('response from API', response);
-        setResults(items);
-      })
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (res.status === 200) return res.json();
 
-    resetSearch();
+        return res.json().then(({ err }) => {
+          throw err;
+        });
+      })
+      .then(({ items }) => {
+        getSearchedProducts(items);
+      })
+      .catch((err) => {
+        console.log('api search error', err);
+        setAlert({
+          type: 'error',
+          message: err,
+          hide: false,
+        });
+      });
+
+    // resetSearch();
   };
 
   // const clearResults = () => {

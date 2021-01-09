@@ -135,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
   },
   searchList: {
     display: 'flex',
-    flexDirection: 'column',
+    // flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',

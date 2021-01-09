@@ -1,20 +1,11 @@
 const PORT = process.env.PORT || 3000;
-<<<<<<< HEAD
 const express = require('express');
 const path = require('path');
 const authRouter = require('./routes/authRouter');
 const productRouter = require('./routes/productRouter');
+const searchRouter = require('./routes/searchRouter');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
-=======
-const express = require("express");
-const path = require("path");
-const authRouter = require("./routes/authRouter");
-const productRouter = require("./routes/productRouter");
-const searchRouter = require("./routes/searchRouter");
-const cors = require("cors");
-const dotenv = require("dotenv").config();
->>>>>>> main
 
 const app = express();
 
@@ -42,11 +33,13 @@ app.get('/', (req, res) => {
  */
 app.get('/api/search-results', (req, res) => {
   res.sendFile(path.join(__dirname, 'new-results.json'));
-////localhost:8080/api/search/
-app.use("/api/search", searchRouter)
+});
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../index.html"));
+////localhost:8080/api/search/
+app.use('/api/search', searchRouter);
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 //Global Error handler
