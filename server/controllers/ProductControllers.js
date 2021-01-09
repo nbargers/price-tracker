@@ -1,5 +1,5 @@
 const priceTrackerDB = require("../models/priceTrackerModel.js");
-const getProductInfo = require("../utils/productWebscraping.js");
+const getProductInfo = require("../utils/getProductInfo.js");
 
 const productController = {};
 
@@ -34,13 +34,14 @@ productController.getProducts = (req, res, next) => {
 //Add Product Controller- POST Request:
 productController.addProduct = async (req, res, next) => {
   // front end sends user_id and google_url only.  Then we use puppeteer to scrape the following:
-  const { google_url, desired_price } = req.body; //from websraping and frontend
+  const { google_url, desired_price, email_preference } = req.body; //from websraping and frontend
   const { userId } = res.locals;
   let productInfo = {};
 
   //Web scrape the google_url:
   try {
     productInfo = await getProductInfo(google_url); //Returns an object: {lowest_daily_price, product_name, store_url, store_name, image_url}
+    productInfo.price_history = [{date: new Date().toDateString(), price: productInfo.lowest_daily_price }]
   } catch (err) {
     return next(
       res.status(400).send("ERROR in getProductsInfo function: " + err)
@@ -49,11 +50,12 @@ productController.addProduct = async (req, res, next) => {
 
   //Add google_url to object:
   productInfo.google_url = google_url;
+    //Need to add lowest daily price to price_history
 
     //Add to products table and return product_id. Then add product_id to object
     const newProduct = await priceTrackerDB.query(
-      `INSERT INTO products (product_name, image_url, google_url, user_id, desired_price) VALUES ($1,$2,$3,$4,$5) returning *`,
-      [productInfo.product_name, productInfo.image_url, productInfo.google_url, userId, desired_price]
+      `INSERT INTO products (product_name, image_url, google_url, user_id, desired_price, price_history, email_preference) VALUES ($1,$2,$3,$4,$5,$6,$7) returning *`,
+      [productInfo.product_name, productInfo.image_url, productInfo.google_url, userId, desired_price, productInfo.price_history, email_preference]
     );
     // productId = newProductId.rows[0]._id;
     res.locals.product = newProduct.rows[0]

@@ -13,6 +13,7 @@ const productsTable = `
     price_history DECIMAL[],
     user_id INT NOT NULL,
     category VARCHAR,
+    email_preference VARCHAR,
     FOREIGN KEY (user_id) references users(_id)
     PRIMARY KEY (_id)
   )`;

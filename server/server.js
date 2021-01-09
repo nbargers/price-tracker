@@ -4,6 +4,7 @@ const path = require("path");
 const authRouter = require("./routes/authRouter");
 const productRouter = require("./routes/productRouter");
 const searchRouter = require("./routes/searchRouter");
+const updatePrices = require("./utils/productWebscraping");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
 
@@ -24,26 +25,29 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
 
 ////localhost:8080/api/search/
-app.use("/api/search", searchRouter)
+app.use("/api/search", searchRouter);
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../index.html"));
 });
 
+
 //Global Error handler
 app.use((err, req, res, next) => {
-  console.log('Global Error', err);
+  console.log("Global Error", err);
   const defaultError = {
-    log: 'Express error handler caught: unknown middleware error',
+    log: "Express error handler caught: unknown middleware error",
     status: 400,
     message: {
-      err: 'Unexpected error occured',
+      err: "Unexpected error occured",
     },
   };
 
   const errObj = Object.assign(defaultError, err);
-  console.log('SEREVER ERROR:', errObj.log);
+  console.log("SEREVER ERROR:", errObj.log);
   return res.status(errObj.status).json(errObj.message);
 });
+
+//Node schedule to run the funciton every 12 hours
 
 app.listen(PORT, () => console.log("Server Running On Port " + PORT));
