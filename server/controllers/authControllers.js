@@ -59,7 +59,7 @@ authController.retrieveToken = (req, res, next) => {
     return next();
   } else {
     return next({
-      log: "authController.veriftySession: Session token incorrect",
+      log: "authController.verifySession: Session token incorrect",
       status: 403,
       message: {
         err: "Session token incorrect. Access forbidden.",

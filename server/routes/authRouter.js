@@ -9,7 +9,7 @@ const authController = require("../controllers/authControllers.js");
 //POST Request
 
 authRouter.post("/signup", authController.createUser, authController.verifyToken, (req, res) => {
-  res.status(200).json({ message: "Signed In", token: res.locals.token });
+  res.status(200).json({ message: "Signed In", token: res.locals.token, email: res.locals.email, id : res.locals.id });
 });
 
 //Login Route:
@@ -18,7 +18,7 @@ authRouter.post("/signup", authController.createUser, authController.verifyToken
 authRouter.post("/login", authController.verifyUser, authController.verifyToken, (req, res) => {
   res
     .status(200)
-    .json({ message: "Signed In", token: res.locals.token });
+    .json({ message: "Signed In", token: res.locals.token, email: res.locals.email, id : res.locals.id  });
 });
 
 authRouter.get("/logout", authController.logout, (req, res) => {
