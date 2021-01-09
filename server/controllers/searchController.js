@@ -1,4 +1,5 @@
 const { response } = require("express");
+const fetch = require("node-fetch");
 const priceTrackerDB = require("../models/priceTrackerModel.js");
 const getProductInfo = require("../utils/productWebscraping.js");
 
