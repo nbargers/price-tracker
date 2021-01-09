@@ -65,7 +65,6 @@ const updatePrices = async () => {
       const userValues = [userId];
       user = await priceTrackerDB.query(userQuery, userValues);
       email = user.rows[0].email;
-      emailPreference = user.rows[0].email_preference;
 
       const transport = mailer.createTransport({
         service: "hotmail",
