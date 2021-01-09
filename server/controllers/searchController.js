@@ -15,7 +15,7 @@ searchController.webSearch = (req, res, next) => {
 
     const items = response.shopping_results
     .filter((item) => {
-      return item.link.includes(goodUrl);
+      return item.link.includes(goodURL);
     })
     .slice(0, 10);
 
