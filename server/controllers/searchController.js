@@ -6,9 +6,9 @@ const searchController = {};
 
 searchController.webSearch = (req, res, next) => {
 
-  const {searchVal} = req.body;
+  const {searchValue} = req.params;
 
-  fetch( `https://api.scaleserp.com/search?search_type=shopping&price_low_to_high&num=10&api_key=B49C8108639B49E8B42DB696E6591130&q=${searchVal}`)
+  fetch( `https://api.scaleserp.com/search?search_type=shopping&price_low_to_high&num=10&api_key=B49C8108639B49E8B42DB696E6591130&q=${searchValue}`)
   .then((response) => response.json())
   .then((response) =>{
     const goodURL = 'google.com/shopping/product/';

@@ -9,10 +9,11 @@ const authController = require("../controllers/authControllers.js");
 //Get All Products:
 //GET Request
 productRouter.get(
-  "/products/:user",
-  productController.getProducts,
+  "/products",
   authController.retrieveToken,
   authController.verifyToken,
+  productController.getProducts,
+  
   (req, res) => {
     res.status(200).json({ products: res.locals.products });
   }
@@ -21,10 +22,10 @@ productRouter.get(
 //Add One Product:
 //POST Request
 productRouter.post(
-  "/products/:user",
-  productController.addProduct,
+  "/products",
   authController.retrieveToken,
   authController.verifyToken,
+  productController.addProduct,
   (req, res) => {
     res.status(200).json({ product: res.locals.product });
   }
@@ -33,20 +34,20 @@ productRouter.post(
 //Delete One Product:
 //DELETE Request
 productRouter.delete(
-  "/products/:user/:id",
-  productController.deleteProduct,
-  authController.retrieveToken,
+  "/products/:id",
+   authController.retrieveToken,
   authController.verifyToken,
+  productController.deleteProduct,
   (req, res) => {
     res.status(200).json("Delete product");
   }
 );
 
 productRouter.put(
-  "/products/:user/:id",
-  productController.editProduct,
+  "/products/:id",
   authController.retrieveToken,
   authController.verifyToken,
+  productController.editProduct,
   (req, res) => {
     res
       .status(200)

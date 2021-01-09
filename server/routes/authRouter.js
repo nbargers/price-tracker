@@ -21,7 +21,7 @@ authRouter.post("/login", authController.verifyUser, authController.verifyToken,
     .json({ message: "Signed In", token: res.locals.token });
 });
 
-authRouter.get("/logout", authController.logout, (res, req) => {
+authRouter.get("/logout", authController.logout, (req, res) => {
   res.status(200).json({ message: res.locals.message });
 });
 
