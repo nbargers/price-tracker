@@ -11,11 +11,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Response = ({ alert }) => {
-  const { type, message } = alert;
+  const { type, message, hide } = alert;
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} display={hide ? 'none' : 'block'}>
       {type && (
         <Alert severity={type} elevation={6} variant="filled">
           <AlertTitle>Error</AlertTitle>

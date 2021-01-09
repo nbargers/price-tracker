@@ -1,67 +1,6 @@
 {
-   "request_info": {
-       "success": true,
-       "credits_used": 11,
-       "credits_used_this_request": 1,
-       "credits_remaining": 114,
-       "credits_reset_at": "2021-02-06T03:51:18.000Z"
-   },
-   "search_metadata": {
-       "created_at": "2021-01-08T17:17:55.537Z",
-       "processed_at": "2021-01-08T17:18:05.264Z",
-       "total_time_taken": 9.73,
-       "engine_url": "https://www.google.com/search?q=monitor&tbm=shop&tbs=vw:l,",
-       "html_url": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&engine=google&output=html",
-       "json_url": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&engine=google&output=json",
-       "timing": [
-           "global_init - 0ms (total 0ms)",
-           "auth_apikey - 14ms (total 14ms)",
-           "auth_retrieve_plan - 4ms (total 18ms)",
-           "auth_retrieve_credit_usage - 13ms (total 32ms)",
-           "processing_invoking_worker - 1ms (total 33ms)",
-           "processing_execution_complete - 9727ms (total 9761ms)",
-           "auth_credit_usage_reconcile - 30ms (total 9792ms)",
-           "global_end - 0ms (total 9792ms)"
-       ]
-   },
-   "search_parameters": {
-       "search_type": "shopping",
-       "q": "monitor"
-   },
-   "search_information": {
-       "original_query_yields_zero_results": false,
-       "query_displayed": "monitor"
-   },
-   "pagination": {
-       "current": 1,
-       "next": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=20&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8NMDCKYP",
-       "other_pages": {
-           "2": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=20&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCJQP",
-           "3": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=40&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCJYP",
-           "4": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=60&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCJgP",
-           "5": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=80&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCJoP",
-           "6": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=100&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCJwP",
-           "7": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=120&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCJ4P",
-           "8": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=140&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCKAP",
-           "9": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=160&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCKIP",
-           "10": "https://www.google.com/search?q=monitor&tbs=vw:l,cat:305,init_ar:SgVKAwixAg%3D%3D,ss:44&tbm=shop&ei=xZP4X9s0rYqXBKbCj9AC&start=180&sa=N&ved=0ahUKEwibq6Pm64zuAhUtxYUKHSbhAyoQ8tMDCKQP"
-       },
-       "api_pagination": {
-           "next": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=3",
-           "other_pages": {
-               "2": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=3",
-               "3": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=5",
-               "4": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=7",
-               "5": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=9",
-               "6": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=11",
-               "7": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=13",
-               "8": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=15",
-               "9": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=17",
-               "10": "https://api.scaleserp.com/search?api_key=B49C8108639B49E8B42DB696E6591130&search_type=shopping&q=monitor&page=19"
-           }
-       }
-   },
-   "shopping_results": [
+    "message": "items retrieved",
+    "items":  [
        {
            "title": "Ecran PC incurvé Samsung C24f396 24\" FHD Dalle VA 5ms HDMI / DVI / VGA Freesync",
            "id": "1414634320027770948",
