@@ -56,8 +56,8 @@ const Register = ({ setOpen, ...rest }) => {
       .then((res) => {
         if (res.status === 200) return res.json();
 
-        return res.json().then(({ err }) => {
-          throw err;
+        return res.json().then(({ error }) => {
+          throw error;
         });
       })
       .then(({ email, id, token }) => {
@@ -66,8 +66,6 @@ const Register = ({ setOpen, ...rest }) => {
         });
       })
       .catch((err) => {
-        console.log(err);
-
         setAlert({
           type: 'error',
           message: err,

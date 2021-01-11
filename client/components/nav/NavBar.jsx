@@ -1,10 +1,11 @@
 import React from 'react';
-import { AppBar, Button, Typography, Toolbar } from '@material-ui/core';
+import { AppBar, Button, Typography, Toolbar, Grid } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import useStyles from '../../style/theme';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../routes/useAuth';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
   const classes = useStyles();
@@ -39,6 +40,15 @@ const NavBar = () => {
             {user ? user.email : ''}
           </Typography>
         </div>
+        <Link to="/home" style={{ color: 'white', textDecoration: 'none' }}>
+          Home
+        </Link>
+        <Link
+          to="/favorites"
+          style={{ color: 'white', textDecoration: 'none' }}
+        >
+          Favorites
+        </Link>
         <Button onClick={logOut} color="inherit" endIcon={<ExitToAppIcon />}>
           Logout
         </Button>

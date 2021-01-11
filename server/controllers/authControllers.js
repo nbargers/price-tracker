@@ -1,8 +1,11 @@
-const priceTrackerDB = require("../models/priceTrackerModel.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv").config();
+const priceTrackerDB = require("../models/priceTrackerModel.js");
 
 const authController = {};
+
+//replace secret key with .env variable 
 
 //Signup Controller- POST Request:
 authController.createUser = async (req, res, next) => {
@@ -33,7 +36,7 @@ authController.createUser = async (req, res, next) => {
       const id = data.rows[0]._id;
       res.locals.email = data.rows[0].email;
       res.locals.id = id;
-      const token = jwt.sign({ user: `${id}` }, "price tracker", {
+      const token = jwt.sign({ user: `${id}` }, process.env.SECRET_KEY, {
         expiresIn: "30m",
       });
       res.locals.token = token;
@@ -69,7 +72,7 @@ authController.retrieveToken = (req, res, next) => {
 };
 
 authController.verifyToken = (req, res, next) => {
-  jwt.verify(res.locals.token, "price tracker", (err, data) => {
+  jwt.verify(res.locals.token, process.env.SECRET_KEY, (err, data) => {
     if (err) {
       res.status(403).json({ message: "Session token authorization failed" });
     } else {

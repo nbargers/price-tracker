@@ -48,7 +48,7 @@ const SearchCard = ({
   return (
     //flexDirection: 'column',
     <>
-      <Grid item xs={12} sm={6} md={4} lg={3} direction="column">
+      <Grid container item xs={12} sm={6} md={4} lg={3} direction="column">
         <Card
         // className={classes.productCard}
         // style={{

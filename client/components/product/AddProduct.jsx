@@ -14,6 +14,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import Switch from '@material-ui/core/Switch';
 
 import CloseIcon from '@material-ui/icons/Close';
 import Response from '../alert/response';
@@ -33,13 +34,15 @@ const AddProduct = ({ setOpen, productId, productUrl, productName }) => {
   });
 
   const [desiredPrice, updateDesiredPrice, resetDesiredPrice] = useInput(0.0);
-  const [emailNotification, setEmailNotification] = useState('no');
+  const [emailNotification, setEmailNotification] = useState(false);
   const handleClose = () => setOpen(false);
+
+  const handleChange = (event) => {
+    setEmailNotification(event.target.checked);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    setEmailNotification(e.target.querySelector('name'));
 
     if (!desiredPrice) {
       setAlert({
@@ -49,7 +52,7 @@ const AddProduct = ({ setOpen, productId, productUrl, productName }) => {
       return;
     }
 
-    const email = emailNotification === 'no' ? false : true;
+    // const email = emailNotification === 'no' ? false : true;
     const desired_price = Number(desiredPrice);
 
     fetch('/api/products', {
@@ -61,7 +64,7 @@ const AddProduct = ({ setOpen, productId, productUrl, productName }) => {
       body: JSON.stringify({
         google_url: productUrl,
         desired_price,
-        email,
+        email_preference: emailNotification,
       }),
     })
       .then((res) => {
@@ -118,7 +121,21 @@ const AddProduct = ({ setOpen, productId, productUrl, productName }) => {
           onChange={updateDesiredPrice}
           type="number"
         />
-        <FormControl component="fieldset">
+        <FormControlLabel
+          style={{ marginLeft: 0, alignItems: 'flex-start' }}
+          control={
+            <Switch
+              checked={emailNotification}
+              onChange={handleChange}
+              name="emailNotification"
+              aria-label="email notification"
+            />
+          }
+          label="Send Email Notifications"
+          labelPlacement="top"
+        />
+
+        {/* <FormControl component="fieldset">
           <FormLabel component="legend">Email Notifications</FormLabel>
           <RadioGroup
             defaultValue="no"
@@ -130,7 +147,7 @@ const AddProduct = ({ setOpen, productId, productUrl, productName }) => {
             <FormControlLabel value="yes" control={<Radio />} label="Yes" />
             <FormControlLabel value="no" control={<Radio />} label="No" />
           </RadioGroup>
-        </FormControl>
+        </FormControl> */}
         <Button
           className={classes.registerBtn}
           type="submit"

@@ -9,7 +9,7 @@ const authController = require('../controllers/authControllers.js');
 //Get All Products:
 //GET Request
 productRouter.get(
-  '/products',
+  '/',
   authController.retrieveToken,
   authController.verifyToken,
   productController.getProducts,
@@ -34,7 +34,7 @@ productRouter.post(
 //Delete One Product:
 //DELETE Request
 productRouter.delete(
-  '/products/:id',
+  '/:id',
   authController.retrieveToken,
   authController.verifyToken,
   productController.deleteProduct,
@@ -44,7 +44,7 @@ productRouter.delete(
 );
 
 productRouter.put(
-  '/products/:id',
+  '/:id',
   authController.retrieveToken,
   authController.verifyToken,
   productController.editProduct,

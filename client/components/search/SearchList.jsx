@@ -14,7 +14,6 @@ const SearchList = ({
 }) => {
   // const date = new Date().toDateString().slice(4, 16);
   const classes = useStyles();
-  
 
   const resultList = searchResults.map(
     ({ id, title, image, link, merchant, price }) => (
@@ -39,7 +38,7 @@ const SearchList = ({
   return (
     resultList.length > 0 && (
       <>
-        <Grid justify="center" xs={12}>
+        <Grid container item justify="center" xs={12}>
           <Typography variant="h5">Search Results</Typography>
           <Divider variant="middle" />
         </Grid>

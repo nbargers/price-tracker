@@ -4,6 +4,7 @@ const path = require('path');
 const authRouter = require('./routes/authRouter');
 const productRouter = require('./routes/productRouter');
 const searchRouter = require('./routes/searchRouter');
+const updatePrices = require('./utils/productWebscraping');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
 
@@ -57,5 +58,7 @@ app.use((err, req, res, next) => {
   console.log('SEREVER ERROR:', errObj.log);
   return res.status(errObj.status).json(errObj.message);
 });
+
+//Node schedule to run the funciton every 12 hours
 
 app.listen(PORT, () => console.log('Server Running On Port ' + PORT));
