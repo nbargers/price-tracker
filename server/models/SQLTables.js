@@ -10,7 +10,7 @@ const productsTable = `
     image_url VARCHAR NOT NULL,
     google_url VARCHAR UNIQUE
     desired_price DECIMAL,  
-    price_history DECIMAL[],
+    price_history jsonb[],
     user_id INT NOT NULL,
     category VARCHAR,
     email_preference VARCHAR,

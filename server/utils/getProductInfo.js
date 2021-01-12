@@ -13,7 +13,7 @@ productInfo Object = {
 const getProductInfo = async (url) => {
   const browser = await puppeteer.launch({
     args: ['--disabled-setuid-sandbox', '--no-sandbox'],
-    headless: false
+    // headless: false,
   });
 
   console.log('url :', url);
@@ -38,7 +38,7 @@ const getProductInfo = async (url) => {
   //1. Get lowestDailyPrice:
   try {
     productInfo.lowest_daily_price = await page.$eval(
-      '.TZeISB',
+      '.g9WBQb',
       (el) => el.innerHTML
     );
     console.log(productInfo.lowest_daily_price);
@@ -73,6 +73,7 @@ const getProductInfo = async (url) => {
   // console.log("productInfo OBJECT: ", productInfo);
 
   await browser.close();
+  console.log('full product info', productInfo);
 
   return productInfo;
 };

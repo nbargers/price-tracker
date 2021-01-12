@@ -17,10 +17,10 @@ const ProductList = () => {
   });
 
   useEffect(() => {
-    fetch('/api/search-results', {
+    fetch('/api/products', {
       method: 'GET',
       headers: {
-        // Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
@@ -31,8 +31,9 @@ const ProductList = () => {
           throw err;
         });
       })
-      .then((data) => {
-        setProductList(data.items);
+      .then(({ products }) => {
+        console.log(products);
+        setProductList(products);
       })
       .catch((err) => {
         setAlert({
@@ -91,25 +92,25 @@ const ProductList = () => {
         <Grid container item justify="flex-start" xs={12}>
           <Typography variant="h5" display="block">
             {productList.length === 0
-              ? `You don't have any favourite products.`
+              ? `You don't have any favorite products.`
               : 'Saved Products'}
           </Typography>
         </Grid>
         {productList.length > 0 &&
-          productList.map(({ id, title, link, merchant }) => {
+          productList.map(({ _id, product_name, store_url, store_name, lowest_daily_price, image_url }) => {
             return (
               <>
                 <ProductCard
-                  productId={id}
+                  productId={_id}
                   key={uuidv4()}
-                  productName={title}
-                  // imageUrl={link}
-                  storeName={merchant}
-                  updateProductList={updateProductList}
+                  productName={product_name}
+                  imageUrl={image_url}
+                  storeName={store_name}
+                  // updateProductList={updateProductList}
                   setAlert={setAlert}
-                  // productPrice={lowest_daily_price}
+                  lowestPrice={lowest_daily_price}
                   // deleteProduct={deleteProduct}
-                  // storeUrl={store_url}
+                  storeUrl={store_url}
                 />
               </>
             );

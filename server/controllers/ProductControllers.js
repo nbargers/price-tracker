@@ -14,11 +14,12 @@ productController.getProducts = (req, res, next) => {
   ORDER BY lowest_daily_price.product_id, lowest_daily_price.timestamp DESC
   `;
 
-  let user = [req.params.user];
+  let user = res.locals.userId;
 
   priceTrackerDB
-    .query(userProducts, user)
+    .query(userProducts, [user])
     .then((data) => {
+      console.log('product list', data.rows);
       res.locals.products = data.rows;
       return next();
     })
@@ -42,7 +43,7 @@ productController.addProduct = async (req, res, next) => {
   //Web scrape the google_url:
   try {
     productInfo = await getProductInfo(google_url); //Returns an object: {lowest_daily_price, product_name, store_url, store_name, image_url}
-    productInfo.price_history = [{date: new Date().toDateString(), price: productInfo.lowest_daily_price }]
+    price_history = JSON.stringify([{"date": new Date().toDateString(), "price": productInfo.lowest_daily_price }])
   } catch (err) {
     return next(
       res.status(400).send("ERROR in getProductsInfo function: " + err)
@@ -56,7 +57,7 @@ productController.addProduct = async (req, res, next) => {
     //Add to products table and return product_id. Then add product_id to object
     const newProduct = await priceTrackerDB.query(
       `INSERT INTO products (product_name, image_url, google_url, user_id, desired_price, price_history, email_preference) VALUES ($1,$2,$3,$4,$5,$6,$7) returning *`,
-      [productInfo.product_name, productInfo.image_url, productInfo.google_url, userId, desired_price, productInfo.price_history, email_preference]
+      [productInfo.product_name, productInfo.image_url, productInfo.google_url, userId, desired_price, price_history, email_preference]
     );
     // productId = newProductId.rows[0]._id;
     res.locals.product = newProduct.rows[0]
