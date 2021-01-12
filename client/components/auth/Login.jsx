@@ -63,8 +63,8 @@ const Login = () => {
       .then((res) => {
         if (res.status === 200) return res.json();
 
-        return res.json().then(({ error }) => {
-          throw error;
+        return res.json().then(({ err }) => {
+          throw err;
         });
       })
       .then(({ email, id, token }) => {
@@ -73,7 +73,6 @@ const Login = () => {
         });
       })
       .catch((err) => {
-        console.log('loginUser ERROR: ', err);
         setAlert({
           type: 'error',
           message: err,

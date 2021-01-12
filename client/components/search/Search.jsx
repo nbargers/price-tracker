@@ -1,141 +1,176 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useInput from '../hooks/useInput';
-import SearchList from './SearchList';
+// import SearchList from './SearchList';
 import useToggler from '../hooks/useToggler';
 import Loader from './Loader';
 import { Button, TextField, Dialog } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Spinner from './Spinner';
 import useStyles from '../../style/theme';
+import Response from '../alert/response';
+import data from '../dummyB/new-results.json';
+import { useAuth } from '../routes/useAuth';
 
-const Search = ({ userId, addProduct, startSpinner, getAllProducts }) => {
-	const firstRender = useRef(true);
-	const [searchVal, handleSearchVal, resetSearch] = useInput('');
-	const [urlInput, setUrl, resetUrl] = useInput('');
-	const [results, setResults] = useState([]);
-	const [isFetching, toggler] = useToggler(false);
-	const [open, setOpen] = useState(false);
-	const [spinner, setSpinner] = useState(false);
-	const classes = useStyles();
+const Search = ({ getSearchedProducts }) => {
+  // const firstRender = useRef(true);
+  const [searchValue, handleSearchValue, resetSearchValue] = useInput('');
+  // const [urlInput, setUrl, resetUrl] = useInput('');
+  // const [results, setResults] = useState([]);
+  const [isFetching, toggler] = useToggler(false);
+  // const [open, setOpen] = useState(false);
+  const [spinner, setSpinner] = useState(false);
+  const classes = useStyles();
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		if (!searchVal) return alert('Please fill in the search bar input!');
+  const [alert, setAlert] = useState({
+    type: '',
+    message: '',
+    hide: true,
+  });
 
-		toggler();
+  const auth = useAuth();
+  const user = auth.getUser();
+  const token = user.token ? user.token : null;
 
-		fetch(
-			`https://api.scaleserp.com/search?search_type=shopping&price_low_to_high&num=10&api_key=B49C8108639B49E8B42DB696E6591130&q=${searchVal}`
-		)
-			.then((response) => response.json())
-			.then((response) => {
-				const goodUrl = 'google.com/shopping/product/';
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-				const items = response.shopping_results
-					.filter((item) => {
-						return item.link.includes(goodUrl);
-					})
-					.slice(0, 10);
+    if (searchValue === '') {
+      setAlert({
+        type: 'error',
+        message: 'Please fill in the search bar input!',
+        hide: false,
+      });
+      return;
+    }
 
-				console.log('items: ', items);
-				setOpen(true);
-				setResults(items);
-				console.log('open: ', open);
-				firstRender.current = false;
-			})
-			.catch((err) => console.log(err));
+    // reset alert.
+    setAlert({
+      type: '',
+      message: '',
+      hide: true,
+    });
 
-		resetSearch();
-	};
+    // toggler();
 
-	const clearResults = () => {
-		setOpen(false);
-		setResults([]);
-	};
+    ///url replace api/search/${searchValue}
+    fetch(`/api/search/${searchValue}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) return res.json();
 
-	const handleUrl = (e) => {
-		e.preventDefault();
+        return res.json().then(({ err }) => {
+          throw err;
+        });
+      })
+      .then(({ items }) => {
+        getSearchedProducts(items);
+      })
+      .catch((err) => {
+        console.log('api search error', err);
+        setAlert({
+          type: 'error',
+          message: err,
+          hide: false,
+        });
+      });
 
-		const goodUrl = 'google.com/shopping/product/';
+    // resetSearch();
+  };
 
-		if (!urlInput.includes(goodUrl)) {
-			resetUrl();
-			return alert('Invalid product url. Please try again');
-		}
+  // const clearResults = () => {
+  //   setOpen(false);
+  //   setResults([]);
+  // };
 
-		setSpinner(true);
-	};
+  // const handleUrl = (e) => {
+  //   e.preventDefault();
 
-	useEffect(() => {
-		if (firstRender.current) return;
-		if (results.length < 1) return; // maybe render a component for no products
-		toggler();
-	}, [results]);
+  //   const goodUrl = 'google.com/shopping/product/';
 
-	useEffect(() => {
-		if (!spinner) return;
+  //   if (!urlInput.includes(goodUrl)) {
+  //     resetUrl();
+  //     return alert('Invalid product url. Please try again');
+  //   }
 
-		const google_url = urlInput;
+  //   setSpinner(true);
+  // };
 
-		fetch(`/api/products/${userId}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				google_url,
-				userId,
-			}),
-		})
-			.then((res) => res.json())
-			.then((res) => {
-				getAllProducts();
-				setSpinner(false);
-				resetUrl();
-			})
-			.catch((err) => {
-				console.log('main ue addProduct', err);
-				setSpinner(false);
-				alert('Uh oh! Seems like the link is broken. Please try again.');
-				resetUrl();
-			});
-	}, [spinner]);
+  // useEffect(() => {
+  //   if (firstRender.current) return;
+  //   if (results.length < 1) return; // maybe render a component for no products
+  //   toggler();
+  // }, [results]);
 
-	if (isFetching) return <Loader />;
-	if (spinner) return <Spinner />;
+  // useEffect(() => {
+  //   if (!spinner) return;
 
-	return results.length > 0 ? (
-		<Dialog open={open} onClose={clearResults}>
-			<SearchList
-				startSpinner={startSpinner}
-				results={results}
-				clearResults={clearResults}
-				addProduct={addProduct}
-				setOpen={setOpen}
-			/>
-		</Dialog>
-	) : (
-		<>
-			<form onSubmit={handleSubmit}>
-				<TextField
-					className={classes.searchBar}
-					variant="outlined"
-					label="Search for a product"
-					value={searchVal}
-					onChange={handleSearchVal}
-					inputProps={{ className: classes.searchBar }}
-				/>
-			</form>
-			<Button
-				className={classes.searchBtn}
-				variant="contained"
-				color="primary"
-				onClick={handleSubmit}
-				endIcon={<SearchIcon />}
-			>
-				Search
-			</Button>
-			{/* <TextField
+  // const google_url = urlInput;
+
+  //   fetch(`/api/products/${userId}`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       google_url,
+  //       userId,
+  //     }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((res) => {
+  //       getAllProducts();
+  //       setSpinner(false);
+  //       resetUrl();
+  //     })
+  //     .catch((err) => {
+  //       console.log('main ue addProduct', err);
+  //       setSpinner(false);
+  //       alert('Uh oh! Seems like the link is broken. Please try again.');
+  //       resetUrl();
+  //     });
+  // }, [spinner]);
+
+  // if (isFetching) return <Loader />;
+  // if (spinner) return <Spinner />;
+
+  // return results.length > 0 ? (
+  //   <Dialog open={open} onClose={clearResults}>
+  //     <SearchList
+  //       startSpinner={startSpinner}
+  //       results={results}
+  //       clearResults={clearResults}
+  //       addProduct={addProduct}
+  //       setOpen={setOpen}
+  //     />
+  //   </Dialog>
+  // ) :
+  return (
+    <>
+      <Response alert={alert} />
+      <form onSubmit={handleSubmit}>
+        <TextField
+          className={classes.searchBar}
+          variant="outlined"
+          label="Search for a product"
+          value={searchValue}
+          onChange={handleSearchValue}
+          inputProps={{ className: classes.searchBar }}
+        />
+      </form>
+      <Button
+        className={classes.searchBtn}
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        endIcon={<SearchIcon />}
+      >
+        Search
+      </Button>
+      {/* <TextField
 					className={classes.searchBar}
 					variant="outlined"
 					label="Enter Product URL"
@@ -143,7 +178,7 @@ const Search = ({ userId, addProduct, startSpinner, getAllProducts }) => {
 					onChange={setUrl}
 					inputProps={{ className: classes.searchBar }}
 				/> */}
-			{/* <Button
+      {/* <Button
 					className={classes.searchBtn}
 					variant="contained"
 					color="primary"
@@ -152,8 +187,7 @@ const Search = ({ userId, addProduct, startSpinner, getAllProducts }) => {
 				>
 					Enter Url
 				</Button> */}
-		</>
-	);
+    </>
+  );
 };
-
 export default Search;
