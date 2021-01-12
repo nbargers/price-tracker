@@ -35,6 +35,7 @@ productController.getProducts = (req, res, next) => {
 productController.addProduct = async (req, res, next) => {
   // front end sends user_id and google_url only.  Then we use puppeteer to scrape the following:
   const { google_url, desired_price, email_preference } = req.body; //from websraping and frontend
+  console.log(google_url)
   const { userId } = res.locals;
   let productInfo = {};
 

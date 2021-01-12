@@ -13,10 +13,13 @@ productInfo Object = {
 const getProductInfo = async (url) => {
   const browser = await puppeteer.launch({
     args: ['--disabled-setuid-sandbox', '--no-sandbox'],
+    headless: false
   });
 
+  console.log('url :', url);
+
   const page = await browser.newPage();
-  await page.goto(url);
+  await page.goto(url, {waitUntil: 'networkidle0'});
 
   const productInfo = {};
 
@@ -31,16 +34,21 @@ const getProductInfo = async (url) => {
     console.log('False');
   }
 
-  await page.waitForSelector('.g9WBQb');
+  // await page.waitForSelector('.g9WBQb');
   //1. Get lowestDailyPrice:
-  productInfo.lowest_daily_price = await page.$eval(
-    '.g9WBQb',
-    (el) => el.innerHTML
-  );
-
+  try {
+    productInfo.lowest_daily_price = await page.$eval(
+      '.TZeISB',
+      (el) => el.innerHTML
+    );
+    console.log(productInfo.lowest_daily_price);
+  } catch (err) {
+    console.log('Puppeteer', err);
+  }
+  // .TZeISB
   productInfo.lowest_daily_price = productInfo.lowest_daily_price.slice(1);
 
-  await page.waitForSelector('.BvQan');
+  // await page.waitForSelector('.BvQan');
   //2. Get productName:
   productInfo.product_name = await page.$eval('.BvQan', (el) => el.innerHTML);
 
@@ -50,7 +58,7 @@ const getProductInfo = async (url) => {
   );
   productInfo.store_url = `https://www.google.com/${storeUrl}`;
 
-  await page.waitForSelector('.b5ycib');
+  // await page.waitForSelector('.b5ycib');
   //4. Get storeName:
   productInfo.store_name = await page.$eval(
     '.b5ycib',

@@ -9,10 +9,11 @@ import Spinner from './Spinner';
 import useStyles from '../../style/theme';
 import Response from '../alert/response';
 import data from '../dummyB/new-results.json';
+import { useAuth } from '../routes/useAuth';
 
 const Search = ({ getSearchedProducts }) => {
   // const firstRender = useRef(true);
-  const [searchVal, handleSearchVal, resetSearch] = useInput('');
+  const [searchValue, handleSearchValue, resetSearchValue] = useInput('');
   // const [urlInput, setUrl, resetUrl] = useInput('');
   // const [results, setResults] = useState([]);
   const [isFetching, toggler] = useToggler(false);
@@ -26,10 +27,14 @@ const Search = ({ getSearchedProducts }) => {
     hide: true,
   });
 
+  const auth = useAuth();
+  const user = auth.getUser();
+  const token = user.token ? user.token : null;
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (searchVal === '') {
+    if (searchValue === '') {
       setAlert({
         type: 'error',
         message: 'Please fill in the search bar input!',
@@ -48,7 +53,12 @@ const Search = ({ getSearchedProducts }) => {
     // toggler();
 
     ///url replace api/search/${searchValue}
-    fetch(`/api/search-results`)
+    fetch(`/api/search/${searchValue}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => {
         if (res.status === 200) return res.json();
 
@@ -146,8 +156,8 @@ const Search = ({ getSearchedProducts }) => {
           className={classes.searchBar}
           variant="outlined"
           label="Search for a product"
-          value={searchVal}
-          onChange={handleSearchVal}
+          value={searchValue}
+          onChange={handleSearchValue}
           inputProps={{ className: classes.searchBar }}
         />
       </form>
