@@ -16,6 +16,8 @@ const Main = () => {
   const auth = useAuth();
   const user = auth.getUser();
 
+  if (!user) return auth.signout(() => history.push('/'));
+
   const token = user ? user.token : null;
 
   //state

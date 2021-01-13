@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useHistory } from 'react-router-dom';
 import { Grid, Typography } from '@material-ui/core';
 import { useAuth } from '../routes/useAuth';
 import ProductCard from './ProductCard';
 import Response from '../alert/response';
 
 const ProductList = () => {
+  const history = useHistory();
   const auth = useAuth();
   const user = auth.getUser();
+
+  if (!user) return auth.signout(() => history.push('/'));
+
   const token = user.token ? user.token : null;
 
   const [productList, setProductList] = useState([]);
@@ -25,14 +30,13 @@ const ProductList = () => {
     })
       .then((res) => {
         if (res.status === 200) return res.json();
-        else if (res.status === 403) auth.signout(() => history.push('/'));
+        if (res.status === 403) return auth.signout(() => history.push('/'));
 
         return res.json().then(({ err }) => {
           throw err;
         });
       })
       .then(({ products }) => {
-        console.log(products);
         setProductList(products);
       })
       .catch((err) => {
@@ -43,7 +47,7 @@ const ProductList = () => {
       });
 
     return () => {};
-  }, []);
+  });
 
   const updateProductList = (id) => {
     setProductList(productList.filter((product) => id === product.id));
@@ -97,24 +101,33 @@ const ProductList = () => {
           </Typography>
         </Grid>
         {productList.length > 0 &&
-          productList.map(({ _id, product_name, store_url, store_name, lowest_daily_price, image_url }) => {
-            return (
-              <>
-                <ProductCard
-                  productId={_id}
-                  key={uuidv4()}
-                  productName={product_name}
-                  imageUrl={image_url}
-                  storeName={store_name}
-                  // updateProductList={updateProductList}
-                  setAlert={setAlert}
-                  lowestPrice={lowest_daily_price}
-                  // deleteProduct={deleteProduct}
-                  storeUrl={store_url}
-                />
-              </>
-            );
-          })}
+          productList.map(
+            ({
+              _id,
+              product_name,
+              store_url,
+              store_name,
+              lowest_daily_price,
+              image_url,
+            }) => {
+              return (
+                <>
+                  <ProductCard
+                    productId={_id}
+                    key={uuidv4()}
+                    productName={product_name}
+                    imageUrl={image_url}
+                    storeName={store_name}
+                    // updateProductList={updateProductList}
+                    setAlert={setAlert}
+                    lowestPrice={lowest_daily_price}
+                    // deleteProduct={deleteProduct}
+                    storeUrl={store_url}
+                  />
+                </>
+              );
+            }
+          )}
       </Grid>
     </>
   );
