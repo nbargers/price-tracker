@@ -11,16 +11,17 @@ const updatePrices = async () => {
   const products = await priceTrackerDB.query(retrieveProducts);
 
   //set result from query to an array
-  const productArr = products.rows[0];
+  const productArr = products.rows;
 
   //iterate over the array to update each products price, price history and send email notifications
   productArr.forEach(async (element) => {
+    console.log(element);
     const productId = element._id;
     const userId = element.user_id;
     const date = new Date().toDateString();
 
     //Use getProductInfo function to build the object of all the data that is needed to be added to the product and lowest_daily_price tables.
-    const productInfo = getProductInfo(element.googleUrl);
+    const productInfo = await getProductInfo(element.google_url);
     const {
       lowest_daily_price,
       store_url,
@@ -31,11 +32,10 @@ const updatePrices = async () => {
 
     //Update lowest_daily_price table
     const updateLowestPrice =
-      "UPDATE lowest_daily_price SET store_url = $1, store_name = $2, image_url = $3, lowest_daily_price =$4 WHERE product_id = $5";
+      "UPDATE lowest_daily_price SET store_url = $1, store_name = $2, lowest_daily_price =$3 WHERE product_id = $4";
     const productValues = [
       store_url,
       store_name,
-      image_url,
       lowest_daily_price,
       productId,
     ];
@@ -43,13 +43,13 @@ const updatePrices = async () => {
       updateLowestPrice,
       productValues
     );
-
+   
     //Update price_history on products table
     const priceArr = element.price_history;
-    priceArr.push({ date: date, price: lowest_daily_price });
+    priceArr.push({ "date": date, "price": lowest_daily_price });
     const updatePriceHistory =
-      "UPDATE products SET price_history = $1 WHERE _id = $2 RETURNING *";
-    const priceValues = [priceArr, productId];
+      "UPDATE products SET price_history = $1 WHERE _id = $2";
+    const priceValues = [JSON.stringify(priceArr), productId];
     const updateHistory = await priceTrackerDB.query(
       updatePriceHistory,
       priceValues
@@ -57,15 +57,16 @@ const updatePrices = async () => {
 
     //Send email to users
     if (
-      element.desired_price <= productInfo.lowest_daily_price &&
-      element.email_preference === true
+      Number(element.desired_price) >= Number(lowest_daily_price) &&
+      element.email_preference === 'true'
     ) {
       //Grab user data
+      console.log('emailing');
       const userQuery = "SELECT * FROM users WHERE _id = $1";
       const userValues = [userId];
       user = await priceTrackerDB.query(userQuery, userValues);
       email = user.rows[0].email;
-      emailPreference = user.rows[0].email_preference;
+      console.log(email);
 
       const transport = mailer.createTransport({
         service: "hotmail",
@@ -76,10 +77,10 @@ const updatePrices = async () => {
         from: "stevehongbusiness@hotmail.com",
         to: `${email}`,
         subject: "Desired Price Match",
-        text: `The ${product_name} is currently on sale for ${lowest_daily_price} at ${store_name}. Follow this link, ${store_url}, to buy your item while the price lasts!`,
+        text: `The ${product_name} is currently on sale for ${lowest_daily_price} at ${store_name}. Follow this link, ${element.google_url}, to buy your item while the price lasts!`,
       };
 
-      transport.sendMail(message, (err, info) => {
+      await transport.sendMail(message, (err, info) => {
         if (err) {
           console.log(err);
         } else {

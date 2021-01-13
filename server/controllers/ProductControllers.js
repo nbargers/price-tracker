@@ -89,7 +89,7 @@ productController.addProduct = async (req, res, next) => {
 
 //Delete Product Controller- DELETE Request:
 productController.deleteProduct = (req, res, next) => {
-  const { id } = req.params;
+  const id = res.locals.userId;
 
   const deleteProduct = `DELETE FROM products WHERE _id=$1`;
 
@@ -110,7 +110,7 @@ productController.deleteProduct = (req, res, next) => {
 
 //Edit product desired price
 productController.editProduct = async (req, res, next) => {
-  const { id } = req.params;
+  const  id  = res.locals.userId;
   const {desiredPrice} = req.body;
 
   try {
