@@ -1,0 +1,37 @@
+{
+    "product": {
+        "_id": 2,
+        "product_name": "HP V21 - 21\" LED Monitor - FullHD",
+        "image_url": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCnOprT6fyg75C9K_FYKpDBkJDBgcvBz-jyPtfkyeuiWn52vrGwZIPD8HNTKTLowRqFcjvYjNkkzDMBt3QxDEY_CSqq3jV7iI-OgOeJDjO&usqp=CAY",
+        "google_url": "https://www.google.com/shopping/product/2647963408468940893",
+        "desired_price": "100",
+        "user_id": 7,
+        "category": null,
+        "email_preference": "true",
+        "price_history": [{
+            "date": "Mon Jan 11 2021",
+            "price": 79.99
+        },
+        {
+            "date": "Mon Jan 12 2021",
+            "price": 89.99
+        },
+        {
+            "date": "Mon Jan 13 2021",
+            "price": 99.99
+        },
+        {
+            "date": "Mon Jan 14 2021",
+            "price": 69.99
+        },
+        {
+            "date": "Mon Jan 15 2021",
+            "price": 59.99
+        }],
+        "product_id": 5,
+        "timestamp": null,
+        "store_name": "hp.com",
+        "lowest_daily_price": "79.99",
+        "store_url": "https://www.google.com//aclk?sa=L&ai=DChcSEwjSwObpvJXuAhXiKK0GHfASC70YABAHGgJwdg&sig=AOD64_1vXhboX9tGoZTsiuOyPI5IRl8gSA&ctype=5&q=&ved=0ahUKEwjmqOTpvJXuAhVCKH0KHdvUBxoQ2ikIGw&adurl="
+    }
+}

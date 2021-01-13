@@ -46,8 +46,8 @@ const ProductList = () => {
         });
       });
 
-    return () => {};
-  });
+    // return () => {};
+  }, []);
 
   const updateProductList = (id) => {
     setProductList(productList.filter((product) => id === product.id));
