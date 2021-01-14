@@ -29,6 +29,9 @@ const Search = ({ getSearchedProducts }) => {
 
   const auth = useAuth();
   const user = auth.getUser();
+
+  if (!user) return auth.signout(() => history.push('/'));
+
   const token = user.token ? user.token : null;
 
   const handleSubmit = (e) => {

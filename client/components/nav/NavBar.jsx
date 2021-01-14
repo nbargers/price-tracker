@@ -14,6 +14,8 @@ const NavBar = () => {
 
   const user = auth.getUser();
 
+  if (!user) return auth.signout(() => history.push('/'));
+
   const logOut = (e) => {
     e.preventDefault();
 
