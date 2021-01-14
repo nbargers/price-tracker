@@ -2,37 +2,12 @@ import React, { useEffect } from 'react';
 import * as d3 from 'd3';
 
 const DailyPriceChart = ({ priceHistory }) => {
-  const api = [
-    {
-      date: '2021-01-11',
-      price: 79.99,
-    },
-    {
-      date: '2021-01-12',
-      price: 89.99,
-    },
-    {
-      date: '2021-01-13',
-      price: 99.99,
-    },
-    {
-      date: '2021-01-14',
-      price: 69.99,
-    },
-    {
-      date: '2021-01-15',
-      price: 59.99,
-    },
-  ];
-
-  const data = api.map((el) => {
+  const data = priceHistory.map((el) => {
     return {
       date: new Date(el.date),
       price: el.price,
     };
   });
-
-  // console.log('formatted data', data);
 
   const drawChart = () => {
     const svgWidth = 600,
@@ -43,10 +18,12 @@ const DailyPriceChart = ({ priceHistory }) => {
 
     const svg = d3
       .select('#container')
+      .style('background-color', '#f3f3f3')
+      .append('svg')
       .attr('width', svgWidth)
       .attr('height', svgHeight);
-    //   .attr('width', width + margin.left + margin.right)
-    //   .attr('height', height + margin.top + margin.bottom);
+    // .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`)
+    // .attr('preserveAspectRatio', 'xMidYMid Meet');
 
     const g = svg
       .append('g')
@@ -63,11 +40,13 @@ const DailyPriceChart = ({ priceHistory }) => {
       .y(function (d) {
         return y(d.price);
       });
+
     x.domain(
       d3.extent(data, function (d) {
         return d.date;
       })
     );
+
     y.domain(
       d3.extent(data, function (d) {
         return d.price;
@@ -76,8 +55,15 @@ const DailyPriceChart = ({ priceHistory }) => {
 
     g.append('g')
       .attr('transform', 'translate(0,' + height + ')')
-      .call(d3.axisBottom(x))
+      .call(
+        d3
+          .axisBottom(x)
+          .ticks(d3.timeDay.every(1))
+          .tickFormat(d3.timeFormat('%d-%b-%y'))
+          .scale(x)
+      )
       .select('.domain')
+
       .remove();
 
     g.append('g')
@@ -105,12 +91,11 @@ const DailyPriceChart = ({ priceHistory }) => {
   }, [data]);
 
   return (
-    <div id="container" style={{ border: '1px solid lightgray' }}>
-      {' '}
-    </div>
+    <div
+      id="container"
+      style={{ border: '1px solid lightgrey', margin: '20px' }}
+    ></div>
   );
-
-  // return <svg></svg>;
 };
 
 export default DailyPriceChart;
