@@ -12,9 +12,12 @@ import {
   CardMedia,
   Button,
   Typography,
+  CardHeader,
+  IconButton,
 } from '@material-ui/core';
 import useStyles from '../../style/theme';
-
+import LinkIcon from '@material-ui/icons/Link';
+import Link from '@material-ui/core/Link';
 const Favorite = () => {
   const classes = useStyles();
   const auth = useAuth();
@@ -81,33 +84,20 @@ const Favorite = () => {
           //   display: 'flex',
           // }}
         >
+          <CardHeader title={favorite.product_name} />
           <CardContent
             style={{
               display: 'flex',
+              flex: 1,
             }}
           >
-            <Typography variant="h2">{favorite.product_name}</Typography>
-          </CardContent>
-          <CardActionArea style={{ height: 300, flexGrow: 1 }}>
-            <CardMedia
-              className={classes.productCardMedia}
-              image={favorite.image_url}
-              title={favorite.product_name}
-            />
-          </CardActionArea>
-          <CardContent>
-            <Typography
-              className={classes.lowestPrice}
-              // variant="h4"
-              color="primary"
-            >
-              Lowest Product Price: ${favorite.lowest_daily_price}
+            <img src={favorite.image_url} />
+            <Typography variant="h6">
+              <Link href={favorite.store_url} target="_blank">
+                {favorite.store_name}
+              </Link>
             </Typography>
-            <Typography variant="subtitle1">
-              <a href={favorite.storeName} target="_blank">
-                {favorite.storeName}
-              </a>
-            </Typography>
+            <Typography variant="h4">{`$ ${favorite.lowest_daily_price}`}</Typography>
           </CardContent>
         </Card>
         <Grid
@@ -120,9 +110,13 @@ const Favorite = () => {
             paddingRight: '10px',
           }}
         >
-          <Card>
-            <Typography variant="h2">Lowest Daily Prices</Typography>
-            <DailyPriceChart priceHistory={favorite.price_history} />
+          <Card style={{ height: '100vh', overflow: 'none' }}>
+            <Typography variant="h2" style={{ margin: '20px' }}>
+              Lowest Daily Prices
+            </Typography>
+            <CardMedia>
+              <DailyPriceChart priceHistory={favorite.price_history} />
+            </CardMedia>
           </Card>
         </Grid>
       </Grid>
