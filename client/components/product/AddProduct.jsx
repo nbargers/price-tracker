@@ -26,6 +26,9 @@ const AddProduct = ({ setOpen, productId, productUrl, productName }) => {
 
   const auth = useAuth();
   const user = auth.getUser();
+
+  if (!user) return auth.signout(() => history.push('/'));
+
   const token = user.token ? user.token : null;
 
   const [alert, setAlert] = useState({
