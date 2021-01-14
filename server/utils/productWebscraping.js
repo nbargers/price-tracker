@@ -71,32 +71,3 @@ const updatePrices = async () => {
       const transport = mailer.createTransport({
         service: "hotmail",
         auth: { user: "stevehongbusiness@hotmail.com", pass: `${process.env.EMAIL_PASSWORD}`},
-      });
-
-      const message = {
-        from: "stevehongbusiness@hotmail.com",
-        to: `${email}`,
-        subject: "Desired Price Match",
-        text: `The ${product_name} is currently on sale for ${lowest_daily_price} at ${store_name}. Follow this link, ${element.google_url}, to buy your item while the price lasts!`,
-      };
-
-      await transport.sendMail(message, (err, info) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("sent " + info.response);
-        }
-      });
-    }
-  });
-};
-
-const midnightUpdate = schedule.scheduleJob("0 0 * * *", function () {
-  updatePrices();
-});
-
-const noonUpdate = schedule.scheduleJob("0 12 * * *", function () {
-  updatePrices();
-});
-
-module.exports = updatePrices;
