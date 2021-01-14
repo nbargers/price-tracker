@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import NavBar from '../nav/NavBar';
 import { useAuth } from '../routes/useAuth';
 import { useParams } from 'react-router-dom';
-import DailyPriceChart from './DailyPriceChart'
+import DailyPriceChart from './DailyPriceChart';
 import {
   Grid,
   Card,
@@ -30,9 +30,8 @@ const Favorite = () => {
   });
 
   let { productId } = useParams();
-  // console.log(productId);
+
   productId = Number(productId);
-  // console.log(productId);
 
   useEffect(() => {
     fetch('/api/product', {
@@ -50,7 +49,6 @@ const Favorite = () => {
         });
       })
       .then(({ product }) => {
-        console.log("Product is", product)
         setFavorite(product);
       })
       .catch((err) => {
@@ -61,32 +59,43 @@ const Favorite = () => {
       });
   }, []);
 
-if (!favorite.price_history){
-  return <></>
-}
-
+  if (!favorite.price_history) {
+    return <></>;
+  }
 
   return (
     <>
       <NavBar />
-      <Grid container item xs={12} sm={6} md={4} lg={3}>
-      <Card
+      <Grid
+        container
+        spacing={3}
+        direction="column"
+        style={{
+          padding: '50px',
+          marginTop: '50px',
+        }}
+      >
+        <Card
           className={classes.productCard}
           // style={{
           //   display: 'flex',
           // }}
         >
-          <CardContent style={{ flexGrow: 1 }}>
-            <Typography variant="h6">{favorite.product_name}</Typography>
-            </CardContent>
-          <CardActionArea style={{ height: 300 }}>
+          <CardContent
+            style={{
+              display: 'flex',
+            }}
+          >
+            <Typography variant="h2">{favorite.product_name}</Typography>
+          </CardContent>
+          <CardActionArea style={{ height: 300, flexGrow: 1 }}>
             <CardMedia
               className={classes.productCardMedia}
               image={favorite.image_url}
               title={favorite.product_name}
             />
           </CardActionArea>
-          <CardContent style={{ flexGrow: 1 }}>
+          <CardContent>
             <Typography
               className={classes.lowestPrice}
               // variant="h4"
@@ -101,19 +110,24 @@ if (!favorite.price_history){
             </Typography>
           </CardContent>
         </Card>
-        <Grid>
-        <Typography 
-        variant="h4"
-        color="primary"
+        <Grid
+          container
+          spacing={3}
+          direction="column"
+          style={{
+            paddingTop: '50px',
+            paddingLeft: '10px',
+            paddingRight: '10px',
+          }}
         >
-          Lowest Daily Prices
-        </Typography>
-        {console.log(favorite)}
-        <DailyPriceChart priceHistory={favorite.price_history}/>
+          <Card>
+            <Typography variant="h2">Lowest Daily Prices</Typography>
+            <DailyPriceChart priceHistory={favorite.price_history} />
+          </Card>
         </Grid>
       </Grid>
     </>
-        );
+  );
 };
 
 export default Favorite;

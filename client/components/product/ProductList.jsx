@@ -22,10 +22,10 @@ const ProductList = () => {
   });
 
   useEffect(() => {
-    fetch('/api/products', {
+    fetch('/api/productsjson', {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        // Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {

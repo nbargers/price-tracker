@@ -1,5 +1,5 @@
 {
-    "product": {
+    "products": [{
         "_id": 2,
         "product_name": "HP V21 - 21\" LED Monitor - FullHD",
         "image_url": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCnOprT6fyg75C9K_FYKpDBkJDBgcvBz-jyPtfkyeuiWn52vrGwZIPD8HNTKTLowRqFcjvYjNkkzDMBt3QxDEY_CSqq3jV7iI-OgOeJDjO&usqp=CAY",
@@ -33,5 +33,5 @@
         "store_name": "hp.com",
         "lowest_daily_price": "79.99",
         "store_url": "https://www.google.com//aclk?sa=L&ai=DChcSEwjSwObpvJXuAhXiKK0GHfASC70YABAHGgJwdg&sig=AOD64_1vXhboX9tGoZTsiuOyPI5IRl8gSA&ctype=5&q=&ved=0ahUKEwjmqOTpvJXuAhVCKH0KHdvUBxoQ2ikIGw&adurl="
-    }
+    }]
 }

@@ -41,6 +41,10 @@ app.get('/api/product', (req, res) => {
   res.sendFile(path.join(__dirname, 'product.json'));
 });
 
+app.get('/api/productsjson', (req, res) => {
+  res.sendFile(path.join(__dirname, 'products.json'));
+});
+
 ////localhost:8080/api/search/
 app.use('/api/search', searchRouter);
 
