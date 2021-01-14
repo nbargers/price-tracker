@@ -19,15 +19,17 @@ productController.getProducts = (req, res, next) => {
   priceTrackerDB
     .query(userProducts, [user])
     .then((data) => {
-      console.log('product list', data.rows);
       res.locals.products = data.rows;
       return next();
     })
     .catch((err) => {
-      console.log(err);
-      return next(
-        res.status(400).send("ERROR in getProducts controller: " + err)
-      );
+      return next({
+        log: `productController.getProducts: ${err}`,
+        status: 500,
+        message: {
+          err: "Internal Server Error",
+        },
+      });
     });
 };
 
@@ -36,18 +38,21 @@ productController.getProducts = (req, res, next) => {
 productController.addProduct = async (req, res, next) => {
   // front end sends user_id and google_url only.  Then we use puppeteer to scrape the following:
   const { google_url, desired_price, email_preference } = req.body; //from websraping and frontend
-  console.log(google_url)
   const { userId } = res.locals;
   let productInfo = {};
 
   //Web scrape the google_url:
   try {
     productInfo = await getProductInfo(google_url); //Returns an object: {lowest_daily_price, product_name, store_url, store_name, image_url}
-    price_history = JSON.stringify([{"date": new Date().toDateString(), "price": productInfo.lowest_daily_price }])
+    price_history = JSON.stringify([{"date": new Date().toDateString(), "price": Number(productInfo.lowest_daily_price) }])
   } catch (err) {
-    return next(
-      res.status(400).send("ERROR in getProductsInfo function: " + err)
-    );
+    return next({
+      log: `productController.addProducts: ${err}`,
+      status: 500,
+      message: {
+        err: "Internal Server Error",
+      },
+    });
   }
 
   //Add google_url to object:
@@ -69,7 +74,7 @@ productController.addProduct = async (req, res, next) => {
   const lowestDailyPriceValues = [
     newProduct.rows[0]._id,
     productInfo.store_name,
-    productInfo.lowest_daily_price,
+    Number(productInfo.lowest_daily_price),
     productInfo.store_url,
   ];
   try {
@@ -81,36 +86,42 @@ productController.addProduct = async (req, res, next) => {
     return next();
   } catch (err) {
     console.log("error: ", error);
-    return next(
-      res.status(400).send("ERROR in addProducts controller: " + err)
-    );
+    return next({
+      log: `productController.addProducts: ${err}`,
+      status: 500,
+      message: {
+        err: "Internal Server Error",
+      },
+    });
   }
 };
 
 //Delete Product Controller- DELETE Request:
-productController.deleteProduct = (req, res, next) => {
-  const { id } = req.params;
+productController.deleteProduct = async(req, res, next) => {
+  const {id} = req.params;
 
-  const deleteProduct = `DELETE FROM products WHERE _id=$1`;
+  try {
+    const lowestQuery = 'DELETE FROM lowest_daily_price WHERE product_id = $1';
+    const deletedLowest = await priceTrackerDB.query(lowestQuery, [id]);
 
-  priceTrackerDB
-    .query(deleteProduct, [id])
-    .then((data) => {
+    const deleteProduct = `DELETE FROM products WHERE _id=$1`;
+    const deletedProduct = await priceTrackerDB.query(deleteProduct,[id]);
 
-      return next();
+    next()
+  } catch (error) {
+    next({
+      log: `productController.deleteProduct: ${error}`,
+      status: 500,
+      message: {
+        err: "Internal Server Error",
+      },
     })
-    .catch((err) => {
-      console.log(err);
-      return next(
-        res.status(400).send("ERROR in deleteProducts controller: " + err)
-      );
-    });
+  }
 };
 
 
 //Edit product desired price
 productController.editProduct = async (req, res, next) => {
-  const { id } = req.params;
   const {desiredPrice} = req.body;
 
   try {
@@ -120,13 +131,38 @@ productController.editProduct = async (req, res, next) => {
     next()
   } catch (error) {
     next({
-      log: "productController.editProduct: Internal server error",
+      log: `productController.editProduct: ${error}`,
       status: 500,
       message: {
         err: "Internal Server Error",
       },
     })
   }
+};
+
+productController.getOneProduct = (req, res, next) => {
+  const userProduct = `SELECT * FROM products 
+  WHERE product_id=$1
+  `;
+
+  const { id } = req.params
+
+  priceTrackerDB
+    .query(userProduct, [id])
+    .then((data) => {
+      console.log(data.rows[0])
+      res.locals.product = data.rows[0];
+      return next();
+    })
+    .catch((err) => {
+      return next({
+        log: `productController.getOneProduct: ${err}`,
+        status: 500,
+        message: {
+          err: "Internal Server Error",
+        },
+      });
+    });
 };
 
 module.exports = productController;

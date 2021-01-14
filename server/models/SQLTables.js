@@ -109,5 +109,3 @@ function insertIntoTable(queryString) {
 // insertIntoTable(lowestDailyPriceInsert);
 // insertIntoTable(usersInsert);
 // insertIntoTable(sessionsInsert);
-
-
