@@ -46,6 +46,7 @@ const getProductInfo = async (url) => {
     console.log('Puppeteer', err);
   }
   // .TZeISB
+  //Convert to a number
   productInfo.lowest_daily_price = productInfo.lowest_daily_price.slice(1);
 
   // await page.waitForSelector('.BvQan');

@@ -19,6 +19,17 @@ productRouter.get(
   }
 );
 
+//Get one Product:
+productRouter.get(
+  '/:id', 
+  authController.retrieveToken,
+  authController.verifyToken,
+  productController.getOneProduct,
+  (req, res) => {
+    res.status(200).json({ product: res.locals.product })
+  }
+)
+
 //Add One Product:
 //POST Request
 productRouter.post(
@@ -39,7 +50,7 @@ productRouter.delete(
   authController.verifyToken,
   productController.deleteProduct,
   (req, res) => {
-    res.status(200).json('Delete product');
+    res.status(200).json('Deleted product');
   }
 );
 
