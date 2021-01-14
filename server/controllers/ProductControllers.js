@@ -41,10 +41,16 @@ productController.addProduct = async (req, res, next) => {
   const { userId } = res.locals;
   let productInfo = {};
 
+  var dateObj = new Date();
+  var month = dateObj.getUTCMonth() + 1; //months from 1-12
+  var day = dateObj.getUTCDate();
+  var year = dateObj.getUTCFullYear();
+  let newDate = year + "-" + month + "-" + day;
+ 
   //Web scrape the google_url:
   try {
     productInfo = await getProductInfo(google_url); //Returns an object: {lowest_daily_price, product_name, store_url, store_name, image_url}
-    price_history = JSON.stringify([{"date": new Date().toDateString(), "price": Number(productInfo.lowest_daily_price) }])
+    price_history = JSON.stringify([{"date": newDate, "price": Number(productInfo.lowest_daily_price) }])
   } catch (err) {
     return next({
       log: `productController.addProducts: ${err}`,

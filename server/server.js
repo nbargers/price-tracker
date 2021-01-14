@@ -4,7 +4,7 @@ const path = require('path');
 const authRouter = require('./routes/authRouter');
 const productRouter = require('./routes/productRouter');
 const searchRouter = require('./routes/searchRouter');
-const updatePrices = require('./utils/scheduldPriceUpdates');
+const updatePrices = require('./utils/scheduledPriceUpdates');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
 

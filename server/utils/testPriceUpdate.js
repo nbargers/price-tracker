@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const priceTrackerDB = require("../models/priceTrackerModel.js");
 const dotenv = require("dotenv").config();
-const getProductInfo = require("./productWebscraping.js");
+// const getProductInfo = require("./productWebscraping.js");
 
 
 //This file contains all the functions needed to automatically pull the most recent price information for every product associated with a user. 

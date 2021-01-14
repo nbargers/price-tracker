@@ -100,7 +100,11 @@ const getProductInfo = require("./getProductInfo");
 
 const updatePrices = async () => {
   //Set Date Variable
-  const date = new Date().toDateString();
+  var dateObj = new Date();
+  var month = dateObj.getUTCMonth() + 1; //months from 1-12
+  var day = dateObj.getUTCDate();
+  var year = dateObj.getUTCFullYear();
+  let newDate = year + "-" + month + "-" + day;
 
   //Query Strings
   //Retrieve Products and User Email
@@ -132,11 +136,11 @@ const updatePrices = async () => {
       const {lowest_daily_price, store_url, store_name, product_name} = productInfo;
   
       //Update lowest_daily_price table
-      const productValues = [store_url, store_name, Number(lowest_daily_price),productId];
+      const productValues = [store_url, store_name, Number(lowest_daily_price), _id];
       const updatedPrices = await priceTrackerDB.query(updateLowestPrice, productValues);
   
       //Update price_history on products table
-      price_history.push({ date: date, price: Number(lowest_daily_price) });
+      price_history.push({ date: newDate, price: Number(lowest_daily_price) });
       const priceValues = [JSON.stringify(price_history), _id];
       const updateHistory = await priceTrackerDB.query(updatePriceHistory, priceValues);
   
@@ -154,7 +158,7 @@ const updatePrices = async () => {
           from: "stevehongbusiness@hotmail.com",
           to: `${email}`,
           subject: "Desired Price Match",
-          text: `The ${product_name} is currently on sale for ${lowest_daily_price} at ${store_name}. Follow this link, ${element.google_url}, to buy your item while the price lasts!`,
+          text: `The ${product_name} is currently on sale for ${lowest_daily_price} at ${store_name}. Follow this link, ${google_url}, to buy your item while the price lasts!`,
         };
   
         await transport.sendMail(message, (err, info) => {
@@ -171,7 +175,7 @@ const updatePrices = async () => {
   }
 }
 
-const midnightUpdate = schedule.scheduleJob("0 0 * * *", function () {
+const midnightUpdate = schedule.scheduleJob("*/1 * * * *", function () {
   updatePrices();
 });
 
