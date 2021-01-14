@@ -1,6 +1,6 @@
 const { response } = require('express');
 const fetch = require('node-fetch');
-const getProductInfo = require('../utils/productWebscraping.js');
+const getProductInfo = require('../utils/scheduldPriceUpdates.js');
 const dotenv = require('dotenv').config();
 
 const searchController = {};
