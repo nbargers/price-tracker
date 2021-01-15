@@ -104,7 +104,6 @@ authController.verifyUser = (req, res, next) => {
                 expiresIn: "30m",
               });
               res.locals.token = token;
-              res.cookie("sessionToken", token);
               return next();
             } else {
               return next({

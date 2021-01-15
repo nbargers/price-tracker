@@ -175,7 +175,7 @@ const updatePrices = async () => {
   }
 }
 
-const midnightUpdate = schedule.scheduleJob("*/1 * * * *", function () {
+const midnightUpdate = schedule.scheduleJob("0 0 * * *", function () {
   updatePrices();
 });
 
